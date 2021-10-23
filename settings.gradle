@@ -1,0 +1,6 @@
+rootProject.name = 'expense-management-back-end'
+include 'Domain'
+include 'Repository'
+include 'Rest'
+include 'Service'
+
