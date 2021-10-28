@@ -1,6 +1,7 @@
 import java.util.Date;
 
-public class MonthlyBudget extends Entity<Integer> {
+public class MonthlyBudget implements Entity<Integer> {
+    private Integer id;
     private User user;
     private double income;
     private Date date;
@@ -9,6 +10,10 @@ public class MonthlyBudget extends Entity<Integer> {
         this.user = user;
         this.income = income;
         this.date = date;
+    }
+
+    public MonthlyBudget() {
+
     }
 
     public User getUser() {
@@ -33,5 +38,15 @@ public class MonthlyBudget extends Entity<Integer> {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer integer) {
+        id = integer;
     }
 }

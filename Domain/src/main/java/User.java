@@ -1,7 +1,8 @@
 import java.util.Date;
 import java.util.Set;
 
-public class User extends Entity<Integer> {
+public class User implements Entity<Integer> {
+    private Integer id;
     private String email;
     private String firstName;
     private String lastName;
@@ -16,6 +17,10 @@ public class User extends Entity<Integer> {
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.passwordHash = passwordHash;
+    }
+
+    public User() {
+
     }
 
     public String getEmail() {
@@ -72,5 +77,15 @@ public class User extends Entity<Integer> {
 
     public void setBudgets(Set<MonthlyBudget> budgets) {
         this.budgets = budgets;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer integer) {
+        id = integer;
     }
 }

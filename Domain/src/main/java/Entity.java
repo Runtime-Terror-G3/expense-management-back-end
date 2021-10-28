@@ -1,11 +1,6 @@
-public class Entity<ID> {
-    private ID id;
+public interface Entity<ID> {
 
-    public ID getId() {
-        return id;
-    }
+    ID getId();
 
-    public void setId(ID id) {
-        this.id = id;
-    }
+    void setId(ID id);
 }

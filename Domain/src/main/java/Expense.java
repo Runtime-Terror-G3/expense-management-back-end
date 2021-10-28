@@ -1,6 +1,7 @@
 import java.time.LocalDateTime;
 
-public class Expense extends Entity<Integer> {
+public class Expense implements Entity<Integer> {
+    private Integer id;
     private double amount;
     private ExpenseCategory category;
     private LocalDateTime date;
@@ -11,6 +12,10 @@ public class Expense extends Entity<Integer> {
         this.category = category;
         this.date = date;
         this.user = user;
+    }
+
+    public Expense() {
+
     }
 
     public double getAmount() {
@@ -43,5 +48,15 @@ public class Expense extends Entity<Integer> {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer integer) {
+        id = integer;
     }
 }
