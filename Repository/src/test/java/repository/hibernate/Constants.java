@@ -25,8 +25,6 @@ public class Constants {
             new Expense(901, ExpenseCategory.Other, LocalDateTime.now(), defaultUsers.get(0))
     );
 
-    public static final int ID_EXPENSE = 1;
-
     public static final Expense expenseToSave = new Expense(123, ExpenseCategory.Housekeeping, LocalDateTime.now(), defaultUsers.get(2));
 
     public static final List<MonthlyBudget> defaultMonthlyBudgets = List.of(
