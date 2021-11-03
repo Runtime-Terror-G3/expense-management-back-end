@@ -5,11 +5,9 @@ import javax.persistence.NoResultException;
 import java.util.List;
 
 public class ExpenseRepository implements IExpenseRepository {
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    public ExpenseRepository(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    public ExpenseRepository(){ }
 
     @Override
     public Expense findOne(Integer integer) {

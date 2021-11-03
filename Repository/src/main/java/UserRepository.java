@@ -5,11 +5,9 @@ import javax.persistence.NoResultException;
 import java.util.List;
 
 public class UserRepository implements IUserRepository {
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    public UserRepository(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    public UserRepository() { }
 
     @Override
     public User findOne(Integer integer) {

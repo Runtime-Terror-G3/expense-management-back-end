@@ -5,11 +5,9 @@ import javax.persistence.NoResultException;
 import java.util.List;
 
 public class MonthlyBudgetRepository implements IMonthlyBudgetRepository {
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    public MonthlyBudgetRepository(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    public MonthlyBudgetRepository() { }
 
     @Override
     public MonthlyBudget findOne(Integer integer) {
