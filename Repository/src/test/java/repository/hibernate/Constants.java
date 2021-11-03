@@ -30,10 +30,8 @@ public class Constants {
     public static final List<MonthlyBudget> defaultMonthlyBudgets = List.of(
             new MonthlyBudget(defaultUsers.get(0), 120, new Date()),
             new MonthlyBudget(defaultUsers.get(1), 900, new Date()),
-            new MonthlyBudget(defaultUsers.get(0), 150, java.sql.Date.valueOf(LocalDateTime.now().minusMonths(2).toLocalDate()))
+            new MonthlyBudget(defaultUsers.get(0), 150, new Date())
     );
-
-    public static final int ID_MONTHLY_BUDGET = 1;
 
     public static final MonthlyBudget budgetToSave = new MonthlyBudget(defaultUsers.get(0), 777, new Date());
 }

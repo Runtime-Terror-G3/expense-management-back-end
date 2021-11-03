@@ -20,12 +20,12 @@ public class MonthlyBudget implements Entity<Integer> {
 
     @Override
     public Integer getId() {
-        return null;
+        return id;
     }
 
     @Override
     public void setId(Integer integer) {
-
+        this.id = integer;
     }
 
     public User getUser() {
@@ -66,11 +66,11 @@ public class MonthlyBudget implements Entity<Integer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MonthlyBudget that = (MonthlyBudget) o;
-        return id == that.id && Double.compare(that.income, income) == 0 && Objects.equals(user, that.user);
+        return id == that.id && Double.compare(that.income, income) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, income);
+        return Objects.hash(id, income);
     }
 }
