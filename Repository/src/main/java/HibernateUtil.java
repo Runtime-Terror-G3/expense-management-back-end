@@ -19,7 +19,7 @@ public class HibernateUtil {
             return;
         }
 
-        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure("/hibernate.cfg.xml").build();
 
         try {
             sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();

@@ -6,7 +6,7 @@
 
 <hibernate-mapping>
 
-    <class name="MonthlyBudget" table="MonthlyBudget">
+    <class name="MonthlyBudget" table="MonthlyBudgets">
         <id name="id" type="java.lang.Integer" column="id">
             <generator class="increment"/>
         </id>
