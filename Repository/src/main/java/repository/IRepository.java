@@ -45,7 +45,7 @@ public interface IRepository<ID extends Serializable, E extends Entity<ID>> {
      *          - the entity, otherwise
      * @throws IllegalArgumentException if id is null
      */
-    Optional<E> find(ID id);
+    Optional<E> findOne(ID id);
 
     /**
      * Method for retrieving all data
