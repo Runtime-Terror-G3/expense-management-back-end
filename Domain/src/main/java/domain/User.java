@@ -1,5 +1,7 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -10,6 +12,7 @@ public class User implements Entity<Integer> {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
+    @JsonIgnore
     private String passwordHash;
     private Set<Expense> expenses;
     private Set<MonthlyBudget> budgets;
