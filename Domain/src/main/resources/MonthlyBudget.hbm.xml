@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="domain.MonthlyBudget" table="MonthlyBudgets">
+        <id name="id" type="java.lang.Integer" column="id">
+            <generator class="increment"/>
+        </id>
+        <many-to-one name="user" not-null="false" class="domain.User" column="userId"/>
+        <property name="income" type="double" column="income"/>
+        <property name="date" type="java.util.Date" column="date"/>
+    </class>
+
+</hibernate-mapping>
