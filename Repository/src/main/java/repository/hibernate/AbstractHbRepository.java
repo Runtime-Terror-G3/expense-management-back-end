@@ -26,6 +26,7 @@ abstract class AbstractHbRepository<ID extends Serializable, E extends Entity<ID
         try {
             sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         } catch (Exception e) {
+            e.printStackTrace();
             StandardServiceRegistryBuilder.destroy(registry);
             throw new RuntimeException("Failed to create session factory");
         }
