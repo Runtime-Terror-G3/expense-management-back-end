@@ -4,10 +4,11 @@ import domain.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Component;
 import repository.IUserRepository;
-
 import java.util.Optional;
 
+@Component
 public class UserHbRepository extends AbstractHbRepository<Integer, User> implements IUserRepository {
     @Override
     protected Query<User> getFindQuery(Session session, Integer integer) {

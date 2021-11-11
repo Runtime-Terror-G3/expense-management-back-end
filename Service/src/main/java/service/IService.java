@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface IService {
     public Optional<User> login(String email, String password);
+    Optional<User> testAddUser(User user);
 }
