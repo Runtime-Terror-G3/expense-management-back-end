@@ -27,7 +27,6 @@ public class UserHbRepository extends AbstractHbRepository<Integer, User> implem
             throw new IllegalArgumentException();
         }
 
-        Optional<User> result = Optional.empty();
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -36,13 +35,13 @@ public class UserHbRepository extends AbstractHbRepository<Integer, User> implem
                     .setMaxResults(1)
                     .uniqueResult();
             transaction.commit();
-            result = entity != null ? Optional.of(entity) : result;
+            return Optional.ofNullable(entity);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             if (transaction != null)
                 transaction.rollback();
         }
 
-        return result;
+        return Optional.empty();
     }
 }
