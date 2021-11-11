@@ -45,7 +45,7 @@ public class Controller {
                         .withClaim("exp", currentTime + tokenTime)
                         .sign(algorithm);
 
-                return new ResponseEntity<String>(token, HttpStatus.FOUND);
+                return new ResponseEntity<String>(token, HttpStatus.OK);
             } else {
                 return new ResponseEntity<String>("Invalid credentials", HttpStatus.NOT_FOUND);
             }
