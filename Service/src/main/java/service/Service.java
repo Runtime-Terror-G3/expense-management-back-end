@@ -32,22 +32,24 @@ public class Service implements IService{
     }
 
     @Override
-    public Boolean deleteMonthlyBudget(int budgetId, int userId) throws ServiceException {
+    public ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId) {
+        ServiceEmptyResponse response = new ServiceEmptyResponse(200,"");
 
         Optional<MonthlyBudget> budgetToDelete = monthlyBudgetRepository.findOne(budgetId);
 
         if (budgetToDelete.isPresent()) {
-            if (budgetToDelete.get().getUser().getId() != userId)
-                throw new ServiceException("Not allowed to delete this resource");
+            if (budgetToDelete.get().getUser().getId() != userId) {
+                response.setStatus(403);
+                response.setErrorMessage("Not allowed to delete this resource");
+            }
 
             Optional<MonthlyBudget> deletedBudget = monthlyBudgetRepository.delete(budgetId);
 
-            if (!deletedBudget.isPresent())
-                return false;
-
-        }else{
-            throw new ServiceException("Monthly budget not found");
+            if (!deletedBudget.isPresent()) {
+                response.setStatus(500);
+                response.setErrorMessage("Internal Server Error");
+            }
         }
-        return true;
+        return response;
     }
 }

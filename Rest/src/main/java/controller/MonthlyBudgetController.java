@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
+import service.ServiceEmptyResponse;
 import service.exception.ServiceException;
 
 @CrossOrigin
@@ -21,15 +22,13 @@ public class MonthlyBudgetController {
             @PathVariable int userId
     ){
         // TODO - get userId using authorization method; return unauthorized if is not valid; remove userId from path
-        Boolean isDeleteSuccess = false;
-        try {
-            isDeleteSuccess = service.deleteMonthlyBudget(budgetId,userId);
-        } catch (ServiceException ex){
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId,userId);
+        switch (response.getStatus()){
+            case 403:
+                return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.FORBIDDEN);
+            case 500:
+                return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (! isDeleteSuccess)
-            return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

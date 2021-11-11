@@ -5,12 +5,13 @@ import service.exception.ServiceException;
 public interface IService {
 
     /**
-     * Deletes a monthly budget of a given user
+        Deletes a monthly budget of a given user
      * @param budgetId id of the budget to be deleted
      * @param userId id of the user who requested the deletion
-     * @return true in case os success and false otherwise
-     * @throws ServiceException if a budget with the given budgetId doesn't exist
-     *                          or the userId is not the id of the user who really owns the budget
+     * @return a ServiceEmptyResponse with status=200 in case of success
+     * a ServiceEmptyResponse with status=403 in case the budget with
+     * the given id is not owned by the user with the given userId
+     * a ServiceEmptyResponse with status=500 in case the delete operation fails
      */
-    Boolean deleteMonthlyBudget(int budgetId, int userId) throws ServiceException;
+    ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
 }
