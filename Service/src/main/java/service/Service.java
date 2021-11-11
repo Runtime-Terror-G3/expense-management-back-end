@@ -22,7 +22,6 @@ public class Service implements IService {
     @Autowired
     private IMonthlyBudgetRepository monthlyBudgetRepository;
 
-
     public Service(
             IUserRepository userRepository,
             IExpenseRepository expenseRepository,
@@ -33,19 +32,28 @@ public class Service implements IService {
         this.monthlyBudgetRepository = monthlyBudgetRepository;
     }
 
-    public Optional<User> login(String email, String password) {
+    private static String hashPassword(String password) {
+        final String salt = "primarily sodium chloride";
+
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            String hash = new String(md.digest((password + "primarily sodium chloride")
+
+            return new String(md.digest((password + salt)
                     .getBytes(StandardCharsets.US_ASCII)));
-
-            Optional<User> user = userRepository.findByEmail(email);
-
-            if (user.isPresent() && Objects.equals(user.get().getPasswordHash(), hash)) {
-                return user;
-            }
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Optional<User> login(String email, String password) {
+        String hash = hashPassword(password);
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isPresent() && Objects.equals(user.get().getPasswordHash(), hash)) {
+            return user;
         }
 
         return Optional.empty();
