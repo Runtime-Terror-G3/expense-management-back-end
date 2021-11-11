@@ -1,6 +1,5 @@
 package service;
 
-
 import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
@@ -54,21 +53,13 @@ public class Service implements IService{
 
     /**
      * transforms an ExpenseDto object to an Expense object
-     *
-     * @throws ServiceException if the userId of the expenseDto does not match any user
      */
     private Expense expenseDtoToExpense(ExpenseDto expenseDto) throws ServiceException {
-        Optional<User> optionalUser = userRepository.findOne(expenseDto.getUserId());
-
-        if (optionalUser.isEmpty()) {
-            throw new ServiceException("The user does not exist.");
-        }
-
         return new Expense(
                 expenseDto.getAmount(),
                 expenseDto.getCategory(),
                 expenseDto.getDate(),
-                optionalUser.get()
+                new User(expenseDto.getUserId())
         );
     }
 
