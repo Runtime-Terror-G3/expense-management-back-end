@@ -1,9 +1,7 @@
 package service;
 
-import domain.User;
-
-import java.util.Optional;
+import service.exception.ServiceException;
 
 public interface IService {
-    Optional<User> testAddUser(User user);
+    Boolean deleteMonthlyBudget(int budgetId, int userId) throws ServiceException;
 }
