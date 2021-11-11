@@ -6,11 +6,11 @@
 
 <hibernate-mapping>
 
-    <class name="domain.MonthlyBudget" table="MonthlyBudgets">
+    <class name="domain.MonthlyBudget" table="MonthlyBudgets" lazy="false">
         <id name="id" type="java.lang.Integer" column="id">
             <generator class="increment"/>
         </id>
-        <many-to-one name="user" not-null="false" class="domain.User" column="userId"/>
+        <many-to-one name="user" not-null="false" class="domain.User" column="userId" lazy="false"/>
         <property name="income" type="double" column="income"/>
         <property name="date" type="java.util.Date" column="date"/>
     </class>
