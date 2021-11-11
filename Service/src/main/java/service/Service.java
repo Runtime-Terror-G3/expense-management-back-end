@@ -7,8 +7,6 @@ import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
 
-import java.util.Optional;
-
 @Component
 public class Service implements IService{
 
@@ -29,8 +27,4 @@ public class Service implements IService{
         this.monthlyBudgetRepository = monthlyBudgetRepository;
     }
 
-    @Override
-    public Optional<User> testAddUser(User user) {
-        return userRepository.save(user);
-    }
 }
