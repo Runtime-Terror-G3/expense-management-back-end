@@ -1,7 +1,5 @@
 package controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import domain.User;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import service.IService;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -39,7 +34,7 @@ public class CreateAccountController {
 
             Optional<User> optionalUser = service.createAccount(email, firstName, lastName, dateOfBirth, password);
 
-            if(!optionalUser.isPresent()) {
+            if(optionalUser.isEmpty()) {
                 return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>("This email already has an associated account", HttpStatus.CONFLICT);

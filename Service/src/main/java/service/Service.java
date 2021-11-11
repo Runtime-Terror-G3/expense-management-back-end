@@ -1,7 +1,6 @@
 package service;
 
 import domain.User;
-import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
@@ -18,11 +17,11 @@ import java.util.Optional;
 public class Service implements IService{
 
     @Autowired
-    private IUserRepository userRepository;
+    private final IUserRepository userRepository;
     @Autowired
-    private IExpenseRepository expenseRepository;
+    private final IExpenseRepository expenseRepository;
     @Autowired
-    private IMonthlyBudgetRepository monthlyBudgetRepository;
+    private final IMonthlyBudgetRepository monthlyBudgetRepository;
 
     public Service(
             IUserRepository userRepository,

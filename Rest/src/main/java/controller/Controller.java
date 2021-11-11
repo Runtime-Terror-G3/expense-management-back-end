@@ -1,9 +1,6 @@
 package controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.User;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +27,8 @@ public class Controller {
         Optional<User> response = service.testAddUser(userToAdd);
 
         if (response.isPresent()){
-            return new ResponseEntity<String>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<User>(userToAdd, HttpStatus.OK);
+        return new ResponseEntity<>(userToAdd, HttpStatus.OK);
     }
 }
