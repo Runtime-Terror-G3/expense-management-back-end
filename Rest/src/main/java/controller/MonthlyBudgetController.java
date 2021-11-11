@@ -9,7 +9,7 @@ import service.exception.ServiceException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("api/expense-management/monthly-budgets")
+@RequestMapping("api/expense-management")
 public class MonthlyBudgetController {
 
     @Autowired
