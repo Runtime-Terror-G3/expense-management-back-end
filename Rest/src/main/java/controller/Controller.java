@@ -3,7 +3,6 @@ package controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import domain.User;
-import java.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
+import utils.Utils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class Controller {
         try {
             JSONObject params = new JSONObject(body);
             String email = (String) params.get("email"),
-                    password = new String(Base64.getDecoder().decode((String) params.get("password")));
+                    password = new String(Utils.hexStringToByteArray((String) params.get("password")));
 
             Optional<User> optional_user = service.login(email, password);
 
