@@ -11,12 +11,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<?> handleConflict(
-            Exception ex,
+            RuntimeException ex,
             WebRequest request
     ){
-        System.out.println("Am exception occurred and it was handled by the global exception handler");
+        System.out.println("An exception occurred and it was handled by the global exception handler");
         ex.printStackTrace();
         return handleExceptionInternal(
                 ex,
