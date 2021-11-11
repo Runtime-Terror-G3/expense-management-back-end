@@ -4,6 +4,7 @@ import domain.ExpenseCategory;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ExpenseDto implements Serializable {
     private double amount;
@@ -18,39 +19,38 @@ public class ExpenseDto implements Serializable {
         return amount;
     }
 
-    public ExpenseDto setAmount(double amount) {
-        this.amount = amount;
-
-        return this;
-    }
-
     public ExpenseCategory getCategory() {
         return category;
-    }
-
-    public ExpenseDto setCategory(ExpenseCategory category) {
-        this.category = category;
-
-        return this;
     }
 
     public LocalDateTime getDate() {
         return date;
     }
 
-    public ExpenseDto setDate(LocalDateTime date) {
-        this.date = date;
-
-        return this;
-    }
-
     public int getUserId() {
         return userId;
     }
 
-    public ExpenseDto setUserId(int userId) {
-        this.userId = userId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExpenseDto)) return false;
+        ExpenseDto that = (ExpenseDto) o;
+        return Double.compare(that.amount, amount) == 0 && userId == that.userId && category == that.category && Objects.equals(date, that.date);
+    }
 
-        return this;
+    @Override
+    public int hashCode() {
+        return Objects.hash(amount, category, date, userId);
+    }
+
+    @Override
+    public String toString() {
+        return "ExpenseDto{" +
+                "amount=" + amount +
+                ", category=" + category +
+                ", date=" + date +
+                ", userId=" + userId +
+                '}';
     }
 }

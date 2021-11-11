@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
 import service.exception.ServiceException;
-import viewmodel.ExpenseViewModel;
 
 @CrossOrigin
 @RestController
@@ -18,14 +17,10 @@ public class ExpenseController {
 
     @PostMapping("/add-expense")
     public ResponseEntity<?> create(@RequestBody ExpenseDto expenseDto) {
-        ExpenseViewModel expense;
-
         try {
-            expense = service.addExpense(expenseDto);
+            return new ResponseEntity<>(service.addExpense(expenseDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<>(expense, HttpStatus.OK);
     }
 }

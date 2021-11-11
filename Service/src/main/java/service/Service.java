@@ -10,7 +10,6 @@ import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
-
 import java.util.Optional;
 
 @Component
@@ -40,7 +39,7 @@ public class Service implements IService{
 
     @Override
     public ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException {
-        Expense expense = expenseDtoToExpense(expenseDto);
+        Expense expense = Expense.fromExpenseDto(expenseDto);
 
         Optional<Expense> savedExpense = expenseRepository.save(expense);
 
@@ -48,30 +47,6 @@ public class Service implements IService{
             throw new ServiceException("An error occurred while saving the expense.");
         }
 
-        return expenseToExpenseViewModel(expense);
-    }
-
-    /**
-     * transforms an ExpenseDto object to an Expense object
-     */
-    private Expense expenseDtoToExpense(ExpenseDto expenseDto) throws ServiceException {
-        return new Expense(
-                expenseDto.getAmount(),
-                expenseDto.getCategory(),
-                expenseDto.getDate(),
-                new User(expenseDto.getUserId())
-        );
-    }
-
-    /**
-     * transforms an Expense object to and ExpenseViewModel object
-     */
-    private ExpenseViewModel expenseToExpenseViewModel(Expense expense) {
-        return new ExpenseViewModel(
-                expense.getId(),
-                expense.getAmount(),
-                expense.getCategory(),
-                expense.getDate()
-        );
+        return ExpenseViewModel.fromExpense(expense);
     }
 }
