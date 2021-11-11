@@ -1,9 +1,9 @@
 package service;
 
 import domain.Expense;
-import domain.User;
 import dto.ExpenseDto;
 import service.exception.ServiceException;
+import domain.User;
 
 import java.util.Optional;
 
