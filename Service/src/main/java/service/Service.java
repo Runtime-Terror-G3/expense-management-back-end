@@ -32,8 +32,9 @@ public class Service implements IService{
         this.monthlyBudgetRepository = monthlyBudgetRepository;
     }
 
+    @Override
     public ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId) {
-        ServiceEmptyResponse response = new ServiceEmptyResponse(200,"");
+        ServiceEmptyResponse response = new ServiceEmptyResponse(200, "");
 
         Optional<MonthlyBudget> budgetToDelete = monthlyBudgetRepository.findOne(budgetId);
 
@@ -41,6 +42,7 @@ public class Service implements IService{
             if (budgetToDelete.get().getUser().getId() != userId) {
                 response.setStatus(403);
                 response.setErrorMessage("Not allowed to delete this resource");
+                return response;
             }
 
             Optional<MonthlyBudget> deletedBudget = monthlyBudgetRepository.delete(budgetId);
@@ -51,6 +53,7 @@ public class Service implements IService{
             }
         }
         return response;
+    }
 
     @Override
     public ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException {
