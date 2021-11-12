@@ -30,7 +30,7 @@ public class CreateAccountController {
             String password = Arrays.toString(Base64.getDecoder().decode((String) params.get("password")));
             String firstName = String.valueOf(params.get("firstName"));
             String lastName = String.valueOf(params.get("lastName"));
-            Date dateOfBirth = new Date(new Timestamp((Long) params.get("dateOfBirth")).getTime());
+            Date dateOfBirth = new Date(new Timestamp((Integer) params.get("dateOfBirth")).getTime());
 
             Optional<User> optionalUser = service.createAccount(email, firstName, lastName, dateOfBirth, password);
 

@@ -1,6 +1,9 @@
 package service;
 
+import domain.MonthlyBudget;
+import domain.Expense;
 import domain.User;
+import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
@@ -11,11 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Objects;
+import service.exception.ServiceException;
+import viewmodel.ExpenseViewModel;
 import java.util.Optional;
 
 @Component
-public class Service implements IService{
-
+public class Service implements IService {
     @Autowired
     private final IUserRepository userRepository;
     @Autowired
@@ -33,9 +38,67 @@ public class Service implements IService{
         this.monthlyBudgetRepository = monthlyBudgetRepository;
     }
 
+    private static String hashPassword(String password) {
+        final String salt = "primarily sodium chloride";
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            return new String(md.digest((password + salt)
+                    .getBytes(StandardCharsets.US_ASCII)));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Optional<User> login(String email, String password) {
+        String hash = hashPassword(password);
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isPresent() && Objects.equals(user.get().getPasswordHash(), hash)) {
+            return user;
+        }
+
+        return Optional.empty();
+    }
+
     @Override
-    public Optional<User> testAddUser(User user) {
-        return userRepository.save(user);
+    public ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId) {
+        ServiceEmptyResponse response = new ServiceEmptyResponse(200, "");
+
+        Optional<MonthlyBudget> budgetToDelete = monthlyBudgetRepository.findOne(budgetId);
+
+        if (budgetToDelete.isPresent()) {
+            if (budgetToDelete.get().getUser().getId() != userId) {
+                response.setStatus(403);
+                response.setErrorMessage("Not allowed to delete this resource");
+                return response;
+            }
+
+            Optional<MonthlyBudget> deletedBudget = monthlyBudgetRepository.delete(budgetId);
+
+            if (!deletedBudget.isPresent()) {
+                response.setStatus(500);
+                response.setErrorMessage("Internal Server Error");
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException {
+        Expense expense = Expense.fromExpenseDto(expenseDto);
+
+        Optional<Expense> savedExpense = expenseRepository.save(expense);
+
+        if (savedExpense.isPresent()) {
+            throw new ServiceException("An error occurred while saving the expense.");
+        }
+
+        return ExpenseViewModel.fromExpense(expense);
     }
 
     public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {

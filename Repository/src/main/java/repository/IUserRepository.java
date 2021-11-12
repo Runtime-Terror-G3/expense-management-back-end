@@ -5,6 +5,7 @@ import domain.User;
 import java.util.Optional;
 
 public interface IUserRepository extends IRepository<Integer, User> {
+
     /**
      * Method for finding a user
      * @param email: String, email of the desired user

@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import repository.IUserRepository;
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -37,13 +38,13 @@ public class UserHbRepository extends AbstractHbRepository<Integer, User> implem
                     .setMaxResults(1)
                     .uniqueResult();
             transaction.commit();
-            result = entity != null ? Optional.of(entity) : result;
+            return Optional.ofNullable(entity);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             if (transaction != null)
                 transaction.rollback();
         }
 
-        return result;
+        return Optional.empty();
     }
 }
