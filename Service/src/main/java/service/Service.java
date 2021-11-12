@@ -2,19 +2,24 @@ package service;
 
 import domain.MonthlyBudget;
 import domain.Expense;
+import domain.User;
 import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import java.util.Optional;
 
 @Component
-public class Service implements IService{
-
+public class Service implements IService {
     @Autowired
     private IUserRepository userRepository;
     @Autowired
@@ -30,6 +35,33 @@ public class Service implements IService{
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
         this.monthlyBudgetRepository = monthlyBudgetRepository;
+    }
+
+    private static String hashPassword(String password) {
+        final String salt = "primarily sodium chloride";
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            return new String(md.digest((password + salt)
+                    .getBytes(StandardCharsets.US_ASCII)));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Optional<User> login(String email, String password) {
+        String hash = hashPassword(password);
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isPresent() && Objects.equals(user.get().getPasswordHash(), hash)) {
+            return user;
+        }
+
+        return Optional.empty();
     }
 
     @Override

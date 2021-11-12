@@ -1,5 +1,6 @@
 package service;
 
+import domain.User;
 import dto.ExpenseDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
@@ -7,6 +8,7 @@ import viewmodel.ExpenseViewModel;
 import java.util.Optional;
 
 public interface IService {
+    public Optional<User> login(String email, String password);
 
     /**
         Deletes a monthly budget of a given user
