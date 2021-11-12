@@ -37,7 +37,7 @@ public class CreateAccountController {
             if(optionalUser.isEmpty()) {
                 return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
             } else {
-                return new ResponseEntity<>("This email already has an associated account", HttpStatus.CONFLICT);
+                return new ResponseEntity<>("Could not create account!", HttpStatus.CONFLICT);
             }
         } catch(JSONException | IllegalArgumentException e) {
             return new ResponseEntity<>("Invalid request", HttpStatus.BAD_REQUEST);
