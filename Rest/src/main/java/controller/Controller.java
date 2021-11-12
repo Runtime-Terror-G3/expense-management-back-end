@@ -28,7 +28,14 @@ public class Controller {
         try {
             JSONObject params = new JSONObject(body);
             String email = (String) params.get("email"),
-                    password = new String(Utils.hexStringToByteArray((String) params.get("password")));
+                    password;
+
+            try {
+                // The password should be a hex string
+                password = new String(Utils.hexStringToByteArray((String) params.get("password")));
+            } catch(IllegalArgumentException e) {
+                return new ResponseEntity<String>("Invalid request", HttpStatus.BAD_REQUEST);
+            }
 
             Optional<User> optional_user = service.login(email, password);
 
