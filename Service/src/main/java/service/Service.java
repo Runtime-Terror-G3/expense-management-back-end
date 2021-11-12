@@ -1,14 +1,15 @@
 package service;
 
 import domain.MonthlyBudget;
-import domain.User;
+import domain.Expense;
+import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
 import service.exception.ServiceException;
-
+import viewmodel.ExpenseViewModel;
 import java.util.Optional;
 
 @Component
@@ -31,7 +32,6 @@ public class Service implements IService{
         this.monthlyBudgetRepository = monthlyBudgetRepository;
     }
 
-    @Override
     public ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId) {
         ServiceEmptyResponse response = new ServiceEmptyResponse(200,"");
 
@@ -51,5 +51,17 @@ public class Service implements IService{
             }
         }
         return response;
+
+    @Override
+    public ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException {
+        Expense expense = Expense.fromExpenseDto(expenseDto);
+
+        Optional<Expense> savedExpense = expenseRepository.save(expense);
+
+        if (savedExpense.isPresent()) {
+            throw new ServiceException("An error occurred while saving the expense.");
+        }
+
+        return ExpenseViewModel.fromExpense(expense);
     }
 }

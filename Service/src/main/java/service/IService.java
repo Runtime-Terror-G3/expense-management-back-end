@@ -1,6 +1,10 @@
 package service;
 
+import dto.ExpenseDto;
 import service.exception.ServiceException;
+import viewmodel.ExpenseViewModel;
+
+import java.util.Optional;
 
 public interface IService {
 
@@ -14,4 +18,6 @@ public interface IService {
      * a ServiceEmptyResponse with status=500 in case the delete operation fails
      */
     ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
+
+    ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
 }
