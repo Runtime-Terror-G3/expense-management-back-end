@@ -5,10 +5,24 @@ import dto.ExpenseDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 
+import java.util.Date;
 import java.util.Optional;
 
 public interface IService {
-    public Optional<User> login(String email, String password);
+    /**
+     * Creates an account
+     * @param email the email to be associated with the account
+     * @param firstName user's first name
+     * @param lastName user's last name
+     * @param dateOfBirth unix time
+     * @param password hex string containing the password
+     * @return an Optional
+     * - empty if successful
+     * - containing the user created by the given parameters, otherwise
+     */
+    Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password);
+
+    Optional<User> login(String email, String password);
 
     /**
         Deletes a monthly budget of a given user
