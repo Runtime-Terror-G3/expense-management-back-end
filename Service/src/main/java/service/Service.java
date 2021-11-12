@@ -101,26 +101,18 @@ public class Service implements IService {
         return ExpenseViewModel.fromExpense(expense);
     }
 
+    @Override
     public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
-        try {
-            // if the email is already used, another account with the same email cannot be created
-            Optional<User> existingUser = userRepository.findByEmail(email);
-            if(existingUser.isPresent())
-                return existingUser;
+        // if the email is already used, another account with the same email cannot be created
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if(existingUser.isPresent())
+            return existingUser;
 
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            String passwordHash = new String(md.digest((password + "primarily sodium chloride")
-                    .getBytes(StandardCharsets.US_ASCII)));
+        String passwordHash = hashPassword(password);
 
-            User newUser = new User(email, firstName, lastName, dateOfBirth, passwordHash);
+        User newUser = new User(email, firstName, lastName, dateOfBirth, passwordHash);
 
-            Optional<User> user = userRepository.save(newUser);
-            if(user.isPresent())
-                return user;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        return userRepository.save(newUser);
 
-        return Optional.empty();
     }
 }

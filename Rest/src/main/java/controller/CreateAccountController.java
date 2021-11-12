@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
+import utils.Utils;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -27,7 +26,8 @@ public class CreateAccountController {
         try {
             JSONObject params = new JSONObject(body);
             String email = String.valueOf(params.get("email"));
-            String password = Arrays.toString(Base64.getDecoder().decode((String) params.get("password")));
+            // The password should be a hex string
+            String password = new String(Utils.hexStringToByteArray((String) params.get("password")));
             String firstName = String.valueOf(params.get("firstName"));
             String lastName = String.valueOf(params.get("lastName"));
             Date dateOfBirth = new Date(new Timestamp((Integer) params.get("dateOfBirth")).getTime());
@@ -39,7 +39,7 @@ public class CreateAccountController {
             } else {
                 return new ResponseEntity<>("This email already has an associated account", HttpStatus.CONFLICT);
             }
-        } catch(JSONException e) {
+        } catch(JSONException | IllegalArgumentException e) {
             return new ResponseEntity<>("Invalid request", HttpStatus.BAD_REQUEST);
         }
     }
