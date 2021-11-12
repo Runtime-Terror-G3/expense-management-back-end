@@ -1,5 +1,7 @@
 package domain;
 
+import dto.ExpenseDto;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -60,6 +62,18 @@ public class Expense implements Entity<Integer> {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * transforms an ExpenseDto object to an Expense object
+     */
+    public static Expense fromExpenseDto(ExpenseDto expenseDto) {
+        return new Expense(
+                expenseDto.getAmount(),
+                expenseDto.getCategory(),
+                expenseDto.getDate(),
+                new User(expenseDto.getUserId())
+        );
     }
 
     @Override
