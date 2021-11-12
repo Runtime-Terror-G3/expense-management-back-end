@@ -8,7 +8,9 @@ import viewmodel.ExpenseViewModel;
 import java.util.Optional;
 
 public interface IService {
-    public Optional<User> login(String email, String password);
+    Optional<User> login(String email, String password);
+
+    String generateUserToken(User user);
 
     /**
         Deletes a monthly budget of a given user

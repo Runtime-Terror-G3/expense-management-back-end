@@ -1,5 +1,7 @@
 package service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
@@ -26,6 +28,8 @@ public class Service implements IService {
     private IExpenseRepository expenseRepository;
     @Autowired
     private IMonthlyBudgetRepository monthlyBudgetRepository;
+    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
+    private static Algorithm signingAlgorith = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
@@ -52,6 +56,25 @@ public class Service implements IService {
         return null;
     }
 
+    private static String generateJWT(int id, String firstName, String lastName, long iat, long exp) {
+        return JWT.create()
+                .withClaim("ID", id)
+                .withClaim("first_name", firstName)
+                .withClaim("last_name", lastName)
+                .withClaim("iat", iat)
+                .withClaim("exp", exp)
+                .sign(signingAlgorith);
+    }
+
+    @Override
+    public String generateUserToken(User user) {
+        long currentTime = System.currentTimeMillis();
+
+        return generateJWT(user.getId(), user.getFirstName(), user.getLastName(), currentTime,
+                currentTime + tokenTime);
+    }
+
+    @Override
     public Optional<User> login(String email, String password) {
         String hash = hashPassword(password);
 
