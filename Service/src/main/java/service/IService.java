@@ -12,6 +12,8 @@ public interface IService {
 
     String generateUserToken(User user);
 
+    Optional<User> getTokenUser(String token);
+
     /**
         Deletes a monthly budget of a given user
      * @param budgetId id of the budget to be deleted

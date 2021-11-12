@@ -47,4 +47,15 @@ public class Controller {
             return new ResponseEntity<String>("Invalid request", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/auth-check")
+    public ResponseEntity<?> authenticationCheck(@RequestBody String token) {
+        Optional<User> user = service.getTokenUser(token);
+
+        if(user.isPresent()) {
+            return new ResponseEntity<String>(user.get().getFirstName(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("Invalid token", HttpStatus.FORBIDDEN);
+        }
+    }
 }
