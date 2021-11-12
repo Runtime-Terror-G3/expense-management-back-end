@@ -15,7 +15,7 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
-public class Controller {
+public class UserController {
     @Autowired
     private IService service;
 
