@@ -60,16 +60,4 @@ public class Controller {
             return new ResponseEntity<String>("Invalid request", HttpStatus.BAD_REQUEST);
         }
     }
-
-    @PostMapping("/test")
-    public ResponseEntity<?> testAddUser(){
-        User userToAdd = new User("ana.pop@gmail.com","Ana","Pop", new Date(),"1234");
-
-        Optional<User> response = service.testAddUser(userToAdd);
-
-        if (response.isPresent()){
-            return new ResponseEntity<String>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<User>(userToAdd, HttpStatus.OK);
-    }
 }

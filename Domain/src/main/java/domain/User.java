@@ -25,6 +25,10 @@ public class User implements Entity<Integer> {
         this.passwordHash = passwordHash;
     }
 
+    public User(Integer id) {
+        this.id = id;
+    }
+
     public User() {
     }
 
