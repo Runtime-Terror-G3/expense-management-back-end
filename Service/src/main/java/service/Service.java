@@ -2,6 +2,7 @@ package service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import domain.ExpenseCategory;
 import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
@@ -31,8 +32,8 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
-    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
-    private static Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
+    private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
+    private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
@@ -74,7 +75,7 @@ public class Service implements IService {
         long currentTime = System.currentTimeMillis();
 
         return generateJWT(user.getId(), user.getFirstName(), user.getLastName(), currentTime,
-                currentTime + tokenTime);
+                currentTime + TOKEN_TIME);
     }
 
     @Override
@@ -149,6 +150,20 @@ public class Service implements IService {
         }
 
         return ExpenseViewModel.fromExpense(expense);
+    }
+
+    @Override
+    public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
+        if(endDate<startDate)
+            throw new ServiceException("Start date should be less than end date!");
+        ExpenseCategory expenseCategory = ExpenseCategory.valueOf(category);
+
+        Optional<Iterable<Expense>> expenses = expenseRepository.findByFilter(userId, expenseCategory, startDate, endDate);
+        if(expenses.isPresent())
+            return expenses.get();
+        else
+            throw new ServiceException("Could not process the query!");
+
     }
 
     @Override
