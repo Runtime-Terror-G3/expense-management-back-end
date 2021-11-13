@@ -6,6 +6,7 @@ import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
+import dto.MonthlyBudgetDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.Objects;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
+
 import java.util.Optional;
 
 @Component
@@ -149,6 +152,19 @@ public class Service implements IService {
         }
 
         return ExpenseViewModel.fromExpense(expense);
+    }
+
+    @Override
+    public MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException {
+        MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
+
+        Optional<MonthlyBudget> savedMonthlyBudget = monthlyBudgetRepository.save(monthlyBudget);
+
+        if (savedMonthlyBudget.isPresent()) {
+            throw new ServiceException("An error occurred while saving the expense.");
+        }
+
+        return MonthlyBudgetViewModel.fromMonthlyBudget(monthlyBudget);
     }
 
     @Override
