@@ -2,8 +2,10 @@ package service;
 
 import domain.User;
 import dto.ExpenseDto;
+import dto.MonthlyBudgetDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
 
 import java.util.Date;
 import java.util.Optional;
@@ -36,4 +38,6 @@ public interface IService {
     ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
 
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
+
+    MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 }
