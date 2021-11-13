@@ -26,6 +26,10 @@ public interface IService {
 
     Optional<User> login(String email, String password);
 
+    String generateUserToken(User user);
+
+    Optional<User> getTokenUser(String token);
+
     /**
         Deletes a monthly budget of a given user
      * @param budgetId id of the budget to be deleted

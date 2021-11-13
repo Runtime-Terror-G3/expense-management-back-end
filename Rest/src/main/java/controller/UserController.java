@@ -1,7 +1,5 @@
 package controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import domain.User;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,16 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import service.IService;
 import utils.Utils;
 
-import java.util.Date;
 import java.util.Optional;
 
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
-public class Controller {
+public class UserController {
     @Autowired
     private IService service;
-    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> login(@RequestBody String body) {
@@ -41,16 +37,7 @@ public class Controller {
 
             if(optional_user.isPresent()) {
                 User user = optional_user.get();
-                Algorithm algorithm = Algorithm.HMAC256("super secret token secret");
-                long currentTime = System.currentTimeMillis();
-
-                String token = JWT.create()
-                        .withClaim("ID", user.getId())
-                        .withClaim("first_name", user.getFirstName())
-                        .withClaim("last_name", user.getFirstName())
-                        .withClaim("iat", currentTime)
-                        .withClaim("exp", currentTime + tokenTime)
-                        .sign(algorithm);
+                String token = service.generateUserToken(user);
 
                 return new ResponseEntity<String>(token, HttpStatus.OK);
             } else {
@@ -58,6 +45,17 @@ public class Controller {
             }
         } catch(JSONException exception) {
             return new ResponseEntity<String>("Invalid request", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/auth-check")
+    public ResponseEntity<?> authenticationCheck(@RequestBody String token) {
+        Optional<User> user = service.getTokenUser(token);
+
+        if(user.isPresent()) {
+            return new ResponseEntity<String>(user.get().getFirstName(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("Invalid token", HttpStatus.FORBIDDEN);
         }
     }
 }
