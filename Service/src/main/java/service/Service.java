@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
@@ -25,11 +26,11 @@ import java.util.Optional;
 @Component
 public class Service implements IService {
     @Autowired
-    private IUserRepository userRepository;
+    private final IUserRepository userRepository;
     @Autowired
-    private IExpenseRepository expenseRepository;
+    private final IExpenseRepository expenseRepository;
     @Autowired
-    private IMonthlyBudgetRepository monthlyBudgetRepository;
+    private final IMonthlyBudgetRepository monthlyBudgetRepository;
     private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
     private static Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
@@ -148,5 +149,20 @@ public class Service implements IService {
         }
 
         return ExpenseViewModel.fromExpense(expense);
+    }
+
+    @Override
+    public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
+        // if the email is already used, another account with the same email cannot be created
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if(existingUser.isPresent())
+            return existingUser;
+
+        String passwordHash = hashPassword(password);
+
+        User newUser = new User(email, firstName, lastName, dateOfBirth, passwordHash);
+
+        return userRepository.save(newUser);
+
     }
 }

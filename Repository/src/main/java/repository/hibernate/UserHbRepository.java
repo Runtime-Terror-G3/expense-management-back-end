@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import repository.IUserRepository;
 import java.util.Optional;
 
+import java.util.Optional;
+
 @Component
 public class UserHbRepository extends AbstractHbRepository<Integer, User> implements IUserRepository {
     @Override
@@ -27,6 +29,7 @@ public class UserHbRepository extends AbstractHbRepository<Integer, User> implem
             throw new IllegalArgumentException();
         }
 
+        Optional<User> result = Optional.empty();
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();

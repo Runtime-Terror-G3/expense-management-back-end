@@ -11,11 +11,16 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     implementation 'com.auth0:java-jwt:3.18.2'
     implementation 'org.json:json:20210307'
 
-    implementation project(':Domain')
-    implementation project(':Repository')
+    implementation project (':Domain')
+    implementation project (':Repository')
+}
 
+test {
+    useJUnitPlatform()
 }

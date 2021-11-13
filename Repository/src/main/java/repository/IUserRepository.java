@@ -14,5 +14,5 @@ public interface IUserRepository extends IRepository<Integer, User> {
      *          - the entity, otherwise
      * @throws IllegalArgumentException if email is null
      */
-    public Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 }
