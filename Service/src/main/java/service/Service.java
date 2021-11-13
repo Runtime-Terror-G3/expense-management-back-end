@@ -2,7 +2,6 @@ package service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import domain.ExpenseCategory;
 import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;

@@ -38,7 +38,7 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
                     "from Expense where userid=:userId " +
                     "and date between :startDate and :endDate ";
 
-            if (! category.equalsIgnoreCase("ALL")) {
+            if (!category.equalsIgnoreCase("ALL")) {
                 sqlQueryString += "and category=:category order by date desc";
                 sqlQuery = session.createQuery(sqlQueryString, Expense.class)
                     .setParameter("category", ExpenseCategory.valueOf(category));

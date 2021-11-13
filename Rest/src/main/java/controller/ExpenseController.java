@@ -25,15 +25,6 @@ public class ExpenseController {
         }
     }
 
-//    @GetMapping("/get-expenses/{userId}/{category}/{startDate}/{endDate}")
-//    public ResponseEntity<?> getExpenses(
-//            @PathVariable int userId,
-//            @PathVariable String category,
-//            @PathVariable long startDate,
-//            @PathVariable long endDate
-//    ){
-
-    //personal as pune filtrele in query string ../get-expenses?userId=1&category=ALL&...
     @GetMapping("/get-expenses")
     public ResponseEntity<?> getExpenses(
         @RequestParam int userId,
