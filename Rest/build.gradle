@@ -30,7 +30,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.5'
 
     implementation 'org.json:json:20210307'
-    implementation 'com.auth0:java-jwt:3.18.2'
 
     implementation project(':Domain')
     implementation project(':Service')

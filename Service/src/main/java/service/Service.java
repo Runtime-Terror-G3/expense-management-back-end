@@ -1,9 +1,12 @@
 package service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
@@ -13,6 +16,7 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import service.exception.ServiceException;
@@ -27,6 +31,8 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
+    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
+    private static Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
@@ -53,6 +59,50 @@ public class Service implements IService {
         return null;
     }
 
+    private static String generateJWT(int id, String firstName, String lastName, long iat, long exp) {
+        return JWT.create()
+                .withClaim("id", id)
+                .withClaim("first_name", firstName)
+                .withClaim("last_name", lastName)
+                .withClaim("iat", iat)
+                .withClaim("exp", exp)
+                .sign(signingAlgorithm);
+    }
+
+    @Override
+    public String generateUserToken(User user) {
+        long currentTime = System.currentTimeMillis();
+
+        return generateJWT(user.getId(), user.getFirstName(), user.getLastName(), currentTime,
+                currentTime + tokenTime);
+    }
+
+    @Override
+    public Optional<User> getTokenUser(String token) {
+        try {
+            String encoded_payload = token.split("\\.")[1];
+            JSONObject payload = new JSONObject(new String(Base64.getDecoder().decode(encoded_payload)));
+
+            int id = (int)payload.get("id");
+            long iat = (long)payload.get("iat"),
+                exp = (long)payload.get("exp");
+            String first_name = (String)payload.get("first_name"),
+                    last_name = (String)payload.get("last_name");
+
+            String newToken = generateJWT(id, first_name, last_name, iat, exp);
+            long currentTime = System.currentTimeMillis();
+
+            if(!newToken.equals(token) || exp < currentTime) {
+                return Optional.empty();
+            }
+
+            return userRepository.findOne(id);
+        } catch(Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<User> login(String email, String password) {
         String hash = hashPassword(password);
 
