@@ -14,5 +14,5 @@ public interface IExpenseRepository extends IRepository<Integer, Expense> {
      * @param endDate end date of the interval
      * @return an optional containing a list with the requested expenses
      */
-    Optional<Iterable<Expense>> findByFilter(int userId, ExpenseCategory expenseCategory, long startDate, long endDate);
+    Optional<Iterable<Expense>> findByFilter(int userId, String category, long startDate, long endDate);
 }

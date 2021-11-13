@@ -8,10 +8,11 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Component
 public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> implements IExpenseRepository {
@@ -27,15 +28,31 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
     }
 
     @Override
-    public Optional<Iterable<Expense>> findByFilter(int userId, ExpenseCategory expenseCategory, long startDate, long endDate) {
+    public Optional<Iterable<Expense>> findByFilter(int userId, String category, long startDate, long endDate) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            List<Expense> expenses = session.createQuery("select new Expense(amount, category, date) from Expense where userid=:userId and category like :category and date > :startDate and date <= :endDate", Expense.class)
+            Query<Expense> sqlQuery;
+
+            String sqlQueryString = "select new domain.Expense(id, amount, category, date) " +
+                    "from Expense where userid=:userId " +
+                    "and date between :startDate and :endDate ";
+
+            if (! category.equalsIgnoreCase("ALL")) {
+                sqlQueryString += "and category=:category";
+                sqlQuery = session.createQuery(sqlQueryString, Expense.class)
+                    .setParameter("category", ExpenseCategory.valueOf(category));
+            } else {
+                sqlQuery = session.createQuery(sqlQueryString, Expense.class);
+            }
+            List<Expense> expenses = sqlQuery
                     .setParameter("userId", userId)
-                    .setParameter("category", expenseCategory)
-                    .setParameter("startDate", LocalDateTime.ofEpochSecond(startDate, 0, ZoneOffset.UTC))
-                    .setParameter("endDate", LocalDateTime.ofEpochSecond(endDate, 0, ZoneOffset.UTC))
+                    .setParameter("startDate",
+                            LocalDateTime.ofInstant(Instant.ofEpochSecond(startDate),
+                                TimeZone.getDefault().toZoneId()))
+                    .setParameter("endDate",
+                            LocalDateTime.ofInstant(Instant.ofEpochSecond(endDate),
+                                TimeZone.getDefault().toZoneId()))
                     .list();
             transaction.commit();
             return Optional.of(expenses);

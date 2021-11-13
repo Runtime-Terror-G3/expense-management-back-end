@@ -156,9 +156,8 @@ public class Service implements IService {
     public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
         if(endDate<startDate)
             throw new ServiceException("Start date should be less than end date!");
-        ExpenseCategory expenseCategory = ExpenseCategory.valueOf(category);
 
-        Optional<Iterable<Expense>> expenses = expenseRepository.findByFilter(userId, expenseCategory, startDate, endDate);
+        Optional<Iterable<Expense>> expenses = expenseRepository.findByFilter(userId, category, startDate, endDate);
         if(expenses.isPresent())
             return expenses.get();
         else
