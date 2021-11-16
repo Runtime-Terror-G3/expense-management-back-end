@@ -19,6 +19,13 @@ public class Expense implements Entity<Integer> {
         this.user = user;
     }
 
+    public Expense(int id, double amount, ExpenseCategory category, LocalDateTime date) {
+        this.id = id;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+    }
+
     public Expense() {
     }
 
