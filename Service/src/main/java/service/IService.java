@@ -48,7 +48,7 @@ public interface IService {
      * @param category category of the expenses
      * @param startDate unix timestamp for the beginning of the interval
      * @param endDate unix timestamp for the end of the interval
-     * @return a list of expenses
+     * @return a collection of expenses
      * @throws ServiceException if the parameters are faulty
      */
     Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;

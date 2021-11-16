@@ -10,6 +10,7 @@ import repository.IExpenseRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -28,7 +29,7 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
     }
 
     @Override
-    public Optional<Iterable<Expense>> findByFilter(int userId, String category, long startDate, long endDate) {
+    public Iterable<Expense> findByFilter(int userId, String category, long startDate, long endDate) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -56,12 +57,12 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
                                 TimeZone.getDefault().toZoneId()))
                     .list();
             transaction.commit();
-            return Optional.of(expenses);
+            return expenses;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             if (transaction != null)
                 transaction.rollback();
         }
-        return Optional.empty();
+        return new ArrayList<>();
     }
 }

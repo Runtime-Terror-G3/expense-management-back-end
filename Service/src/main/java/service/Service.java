@@ -16,12 +16,10 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
-import java.util.Optional;
 
 @Component
 public class Service implements IService {
@@ -156,12 +154,7 @@ public class Service implements IService {
         if(endDate<startDate)
             throw new ServiceException("Start date should be less than end date!");
 
-        Optional<Iterable<Expense>> expenses = expenseRepository.findByFilter(userId, category, startDate, endDate);
-        if(expenses.isPresent())
-            return expenses.get();
-        else
-            throw new ServiceException("Could not process the query!");
-
+        return expenseRepository.findByFilter(userId, category, startDate, endDate);
     }
 
     @Override
