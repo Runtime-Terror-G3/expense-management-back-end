@@ -40,4 +40,16 @@ public interface IService {
     ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
 
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
+
+    /**
+     * delete an expense
+     * @param expenseId-id of the expense
+     * @param userId-id of the user who make the request
+     * @return-a ServiceEmptyResponse with status:
+     * 200-succes
+     * 403-the user who make the request isn't the user with this expense
+     * 500-internal server error
+     */
+
+    ServiceEmptyResponse deleteExpense(int expenseId, int userId);
 }

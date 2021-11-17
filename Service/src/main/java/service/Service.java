@@ -152,6 +152,33 @@ public class Service implements IService {
     }
 
     @Override
+    public ServiceEmptyResponse deleteExpense(int expenseId, int userId) {
+        ServiceEmptyResponse response = new ServiceEmptyResponse(200, "");
+
+        Optional<Expense> expense = expenseRepository.findOne(expenseId);
+
+        if (expense.isPresent()) {
+            if (expense.get().getUser().getId() != userId) {
+                response.setStatus(403);
+                response.setErrorMessage("Forbidden access to this expense");
+                return response;
+            }
+
+            Optional<Expense> expenseToDelete = expenseRepository.delete(expenseId);
+
+            if (!expenseToDelete.isPresent()) {
+                response.setStatus(500);
+                response.setErrorMessage("Internal Server Error");
+            }
+        }
+        else{
+            response.setStatus(500);
+            response.setErrorMessage("this expense doesn't exist");
+        }
+        return response;
+    }
+
+    @Override
     public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
         // if the email is already used, another account with the same email cannot be created
         Optional<User> existingUser = userRepository.findByEmail(email);
