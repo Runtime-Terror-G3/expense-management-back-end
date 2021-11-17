@@ -16,12 +16,10 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
-import java.util.Optional;
 
 @Component
 public class Service implements IService {
@@ -31,8 +29,8 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
-    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
-    private static Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
+    private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
+    private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
@@ -74,7 +72,7 @@ public class Service implements IService {
         long currentTime = System.currentTimeMillis();
 
         return generateJWT(user.getId(), user.getFirstName(), user.getLastName(), currentTime,
-                currentTime + tokenTime);
+                currentTime + TOKEN_TIME);
     }
 
     @Override
@@ -176,6 +174,14 @@ public class Service implements IService {
             response.setErrorMessage("this expense doesn't exist");
         }
         return response;
+    }
+
+    public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
+        if(endDate<startDate)
+            throw new ServiceException("Start date should be less than end date!");
+
+        return expenseRepository.findByFilter(userId, category, startDate, endDate);
+
     }
 
     @Override

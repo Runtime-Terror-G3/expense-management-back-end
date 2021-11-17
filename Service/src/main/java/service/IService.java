@@ -1,5 +1,6 @@
 package service;
 
+import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
 import service.exception.ServiceException;
@@ -52,4 +53,15 @@ public interface IService {
      */
 
     ServiceEmptyResponse deleteExpense(int expenseId, int userId);
+
+     * Get expenses filtered by a date interval
+     * @param userId id of the user the expenses belong to
+     * @param category category of the expenses
+     * @param startDate unix timestamp for the beginning of the interval
+     * @param endDate unix timestamp for the end of the interval
+     * @return a collection of expenses
+     * @throws ServiceException if the parameters are faulty
+     */
+    Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;
+
 }
