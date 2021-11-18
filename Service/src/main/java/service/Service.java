@@ -6,6 +6,7 @@ import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
+import dto.MonthlyBudgetDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.*;
 
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
 
 @Component
 public class Service implements IService {
@@ -170,5 +172,29 @@ public class Service implements IService {
 
         return userRepository.save(newUser);
 
+    }
+
+    @Override
+    public MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException {
+        Optional<MonthlyBudget> budgetToUpdate = monthlyBudgetRepository.findOne(budgetId);
+
+        if (budgetToUpdate.isPresent()) {
+            if (budgetToUpdate.get().getUser().getId() != monthlyBudgetDto.getUserId()) {
+                throw new ServiceException("Not allowed to modify this resource");
+            }
+
+            MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
+            monthlyBudget.setId(budgetId);
+            Optional<MonthlyBudget> updatedBudget = monthlyBudgetRepository.update(monthlyBudget);
+
+            if (updatedBudget.isPresent()) {
+                throw new ServiceException("An error occurred while trying to modify this resource");
+            }
+
+            return MonthlyBudgetViewModel.fromMonthlyBudget(monthlyBudget);
+        }
+        else {
+            throw new ServiceException("This resource doesn't exist");
+        }
     }
 }

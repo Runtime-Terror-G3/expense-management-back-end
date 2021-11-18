@@ -3,8 +3,10 @@ package service;
 import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
+import dto.MonthlyBudgetDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
 
 import java.util.Date;
 import java.util.Optional;
@@ -52,4 +54,13 @@ public interface IService {
      * @throws ServiceException if the parameters are faulty
      */
     Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;
+
+    /**
+     * Updates a monthly budget
+     * @param budgetId id of the budget to be updated
+     * @param monthlyBudgetDto a dto object of the monthly budget to be updated
+     * @return the viewModel of the updated monthly budget
+     * @throws ServiceException if the budget can't be updated
+     */
+    MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 }

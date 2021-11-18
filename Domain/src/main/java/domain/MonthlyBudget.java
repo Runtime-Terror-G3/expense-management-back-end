@@ -1,5 +1,7 @@
 package domain;
 
+import dto.MonthlyBudgetDto;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -72,5 +74,13 @@ public class MonthlyBudget implements Entity<Integer> {
     @Override
     public int hashCode() {
         return Objects.hash(id, income);
+    }
+
+    public static MonthlyBudget fromMonthlyBudgetDto(MonthlyBudgetDto monthlyBudgetDto) {
+        return new MonthlyBudget(
+                new User(monthlyBudgetDto.getUserId()),
+                monthlyBudgetDto.getIncome(),
+                monthlyBudgetDto.getDate()
+        );
     }
 }
