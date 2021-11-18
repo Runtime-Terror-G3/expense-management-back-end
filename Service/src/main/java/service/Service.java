@@ -2,6 +2,7 @@ package service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import domain.ExpenseCategory;
 import domain.MonthlyBudget;
 import domain.Expense;
 import domain.User;
@@ -16,6 +17,7 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import service.exception.ServiceException;
@@ -155,6 +157,16 @@ public class Service implements IService {
             throw new ServiceException("Start date should be less than end date!");
 
         return expenseRepository.findByFilter(userId, category, startDate, endDate);
+    }
+
+    @Override
+    public Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) throws ServiceException {
+        Optional<User> user = userRepository.findOne(userId);
+        if (user.isEmpty()) {
+            throw new ServiceException("User with id " + userId + " does not exist");
+        }
+
+        return expenseRepository.getTotalAmountByCategory(user.get(), start, end);
     }
 
     @Override

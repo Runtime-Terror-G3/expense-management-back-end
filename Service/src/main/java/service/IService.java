@@ -1,12 +1,15 @@
 package service;
 
 import domain.Expense;
+import domain.ExpenseCategory;
 import domain.User;
 import dto.ExpenseDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 public interface IService {
@@ -52,4 +55,14 @@ public interface IService {
      * @throws ServiceException if the parameters are faulty
      */
     Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;
+
+    /**
+     * Method for retrieving the total amount of a user's expenses within a time period, grouped by expense category
+     * @param userId, identifier of the user whose expenses are taken into account
+     * @param start, the start of the considered time period
+     * @param end, the end of the considered time period
+     * @return a {@code Map} where each key represents an {@code ExpenseCategory} and the value, the total amount of expenses of that category
+     * @throws ServiceException if there is no user with the given identifier
+     */
+    Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) throws ServiceException;
 }
