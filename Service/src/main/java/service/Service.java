@@ -151,6 +151,7 @@ public class Service implements IService {
         return ExpenseViewModel.fromExpense(expense);
     }
 
+
     @Override
     public ServiceEmptyResponse deleteExpense(int expenseId, int userId) {
         ServiceEmptyResponse response = new ServiceEmptyResponse(200, "");
@@ -172,7 +173,8 @@ public class Service implements IService {
             }
         }
         else{
-            response.setStatus(500);
+            
+            response.setStatus(404);
             response.setErrorMessage("this expense doesn't exist");
         }
         return response;

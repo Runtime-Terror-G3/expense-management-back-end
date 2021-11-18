@@ -50,6 +50,5 @@ public interface IService {
      * 403-the user who make the request isn't the user with this expense
      * 500-internal server error
      */
-
     ServiceEmptyResponse deleteExpense(int expenseId, int userId);
 }

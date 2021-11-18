@@ -33,6 +33,8 @@ public class ExpenseController {
                 return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.FORBIDDEN);
             case 500:
                 return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            case 404:
+                return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
