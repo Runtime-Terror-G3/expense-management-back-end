@@ -50,9 +50,10 @@ public interface IService {
      * 200-succes
      * 403-the user who make the request isn't the user with this expense
      * 500-internal server error
+     * 404-expense not found
      */
     ServiceEmptyResponse deleteExpense(int expenseId, int userId);
-
+/*
      * Get expenses filtered by a date interval
      * @param userId id of the user the expenses belong to
      * @param category category of the expenses
