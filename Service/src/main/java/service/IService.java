@@ -52,7 +52,7 @@ public interface IService {
      * 500-internal server error
      * 404-expense not found
      */
-    ServiceEmptyResponse deleteExpense(int expenseId, int userId);
+    ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException;
 /*
      * Get expenses filtered by a date interval
      * @param userId id of the user the expenses belong to

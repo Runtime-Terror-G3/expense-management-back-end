@@ -151,31 +151,27 @@ public class Service implements IService {
 
 
     @Override
-    public ServiceEmptyResponse deleteExpense(int expenseId, int userId) {
-        ServiceEmptyResponse response = new ServiceEmptyResponse(200, "");
+    public ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException{
 
         Optional<Expense> expense = expenseRepository.findOne(expenseId);
 
         if (expense.isPresent()) {
             if (expense.get().getUser().getId() != userId) {
-                response.setStatus(403);
-                response.setErrorMessage("Forbidden access to this expense");
-                return response;
+                throw new ServiceException("Forbidden access to this expense");
             }
 
             Optional<Expense> expenseToDelete = expenseRepository.delete(expenseId);
 
             if (!expenseToDelete.isPresent()) {
-                response.setStatus(500);
-                response.setErrorMessage("Internal Server Error");
+                throw new ServiceException("Internal server error");
+            }else{
+                return expenseToDelete.get().toExpenseViewModel();
             }
         }
         else{
             
-            response.setStatus(404);
-            response.setErrorMessage("this expense doesn't exist");
+            throw new ServiceException("This expense doesn't exist");
         }
-        return response;
     }
 
     public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
