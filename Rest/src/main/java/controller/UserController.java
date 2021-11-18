@@ -38,8 +38,9 @@ public class UserController {
             if(optional_user.isPresent()) {
                 User user = optional_user.get();
                 String token = service.generateUserToken(user);
+                String responseJson = "{\"token\": \"" + token + "\"}";
 
-                return new ResponseEntity<String>(token, HttpStatus.OK);
+                return new ResponseEntity<String>(responseJson, HttpStatus.OK);
             } else {
                 return new ResponseEntity<String>("Invalid credentials", HttpStatus.NOT_FOUND);
             }
