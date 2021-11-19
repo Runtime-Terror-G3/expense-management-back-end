@@ -48,11 +48,7 @@ public class ExpenseController {
     public ResponseEntity<?> getExpensesTotalByCategory(@RequestParam("userId") int userId,
                                                         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
                                                         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        try {
-            Map<ExpenseCategory, Double> result = service.getExpenseTotalByCategory(userId, start, end);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (ServiceException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Map<ExpenseCategory, Double> result = service.getExpenseTotalByCategory(userId, start, end);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

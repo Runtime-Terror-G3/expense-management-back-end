@@ -62,7 +62,6 @@ public interface IService {
      * @param start, the start of the considered time period
      * @param end, the end of the considered time period
      * @return a {@code Map} where each key represents an {@code ExpenseCategory} and the value, the total amount of expenses of that category
-     * @throws ServiceException if there is no user with the given identifier
      */
-    Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) throws ServiceException;
+    Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end);
 }

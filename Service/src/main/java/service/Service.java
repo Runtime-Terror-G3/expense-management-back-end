@@ -160,7 +160,7 @@ public class Service implements IService {
     }
 
     @Override
-    public Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) throws ServiceException {
+    public Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) {
         return expenseRepository.getTotalAmountByCategory(new User(userId), start, end);
     }
 
