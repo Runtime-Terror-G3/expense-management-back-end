@@ -152,6 +152,19 @@ public class Service implements IService {
     }
 
     @Override
+    public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException {
+        Expense expense = Expense.fromExpenseDto(expenseDto);
+        expense.setId(expenseId);
+
+        Optional<Expense> updatedExpense = expenseRepository.update(expense);
+        if (updatedExpense.isPresent()) {
+            throw new ServiceException("An error occurred while updating the expense.");
+        }
+
+        return ExpenseViewModel.fromExpense(expense);
+    }
+
+    @Override
     public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
         // if the email is already used, another account with the same email cannot be created
         Optional<User> existingUser = userRepository.findByEmail(email);

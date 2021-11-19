@@ -40,4 +40,6 @@ public interface IService {
     ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
 
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
+
+    ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
 }
