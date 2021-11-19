@@ -161,12 +161,7 @@ public class Service implements IService {
 
     @Override
     public Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) throws ServiceException {
-        Optional<User> user = userRepository.findOne(userId);
-        if (user.isEmpty()) {
-            throw new ServiceException("User with id " + userId + " does not exist");
-        }
-
-        return expenseRepository.getTotalAmountByCategory(user.get(), start, end);
+        return expenseRepository.getTotalAmountByCategory(new User(userId), start, end);
     }
 
     @Override
