@@ -1,6 +1,5 @@
 package controller;
 
-import domain.Expense;
 import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,5 +55,14 @@ public class ExpenseController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/update-expense/{expenseId}")
+    public ResponseEntity<?> update(@RequestBody ExpenseDto expenseDto, @PathVariable int expenseId) {
+        try {
+            return new ResponseEntity<>(service.updateExpense(expenseDto, expenseId), HttpStatus.OK);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
