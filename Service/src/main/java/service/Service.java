@@ -23,6 +23,9 @@ import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 
+import java.util.Optional;
+
+
 @Component
 public class Service implements IService {
     @Autowired
@@ -182,6 +185,19 @@ public class Service implements IService {
 
         return expenseRepository.findByFilter(userId, category, startDate, endDate);
 
+    }
+
+    @Override
+    public MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException {
+        MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
+
+        Optional<MonthlyBudget> savedMonthlyBudget = monthlyBudgetRepository.save(monthlyBudget);
+
+        if (savedMonthlyBudget.isPresent()) {
+            throw new ServiceException("An error occurred while saving the expense.");
+        }
+
+        return MonthlyBudgetViewModel.fromMonthlyBudget(monthlyBudget);
     }
 
     @Override

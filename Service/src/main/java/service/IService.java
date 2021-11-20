@@ -44,6 +44,8 @@ public interface IService {
 
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
 
+    MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
     /**
      * delete an expense
      * @param expenseId-id of the expense
@@ -74,4 +76,5 @@ public interface IService {
      * @throws ServiceException if the budget can't be updated
      */
     MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
 }

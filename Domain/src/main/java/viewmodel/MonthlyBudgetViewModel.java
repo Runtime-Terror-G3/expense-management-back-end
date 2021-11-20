@@ -46,7 +46,9 @@ public class MonthlyBudgetViewModel implements Serializable {
     public static MonthlyBudgetViewModel fromMonthlyBudget(MonthlyBudget monthlyBudget) {
         return new MonthlyBudgetViewModel(
                 monthlyBudget.getId(),
+
                 monthlyBudget.getIncome(),
+
                 monthlyBudget.getDate()
         );
     }
@@ -75,4 +77,6 @@ public class MonthlyBudgetViewModel implements Serializable {
                 ", date=" + date +
                 '}';
     }
+
 }
+
