@@ -3,6 +3,7 @@ package dto;
 import domain.MonthlyBudget;
 import domain.User;
 
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -68,3 +69,4 @@ public class MonthlyBudgetDto implements Serializable {
         return Objects.hash(userId, income, date);
     }
 }
+

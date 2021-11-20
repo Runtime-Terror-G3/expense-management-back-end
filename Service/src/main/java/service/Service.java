@@ -17,14 +17,14 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 
 import java.util.Optional;
+
 
 @Component
 public class Service implements IService {
@@ -34,8 +34,8 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
-    private static long tokenTime = 8 * 60 * 60 * 1000; // 8 hours
-    private static Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
+    private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
+    private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
@@ -77,7 +77,7 @@ public class Service implements IService {
         long currentTime = System.currentTimeMillis();
 
         return generateJWT(user.getId(), user.getFirstName(), user.getLastName(), currentTime,
-                currentTime + tokenTime);
+                currentTime + TOKEN_TIME);
     }
 
     @Override
@@ -154,6 +154,39 @@ public class Service implements IService {
         return ExpenseViewModel.fromExpense(expense);
     }
 
+
+    @Override
+    public ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException{
+
+        Optional<Expense> expense = expenseRepository.findOne(expenseId);
+
+        if (expense.isPresent()) {
+            if (expense.get().getUser().getId() != userId) {
+                throw new ServiceException("Forbidden access to this expense");
+            }
+
+            Optional<Expense> expenseToDelete = expenseRepository.delete(expenseId);
+
+            if (!expenseToDelete.isPresent()) {
+                throw new ServiceException("Internal server error");
+            }else{
+                return expenseToDelete.get().toExpenseViewModel();
+            }
+        }
+        else{
+            
+            throw new ServiceException("This expense doesn't exist");
+        }
+    }
+
+    public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
+        if(endDate<startDate)
+            throw new ServiceException("Start date should be less than end date!");
+
+        return expenseRepository.findByFilter(userId, category, startDate, endDate);
+
+    }
+
     @Override
     public MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException {
         MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
@@ -180,5 +213,29 @@ public class Service implements IService {
 
         return userRepository.save(newUser);
 
+    }
+
+    @Override
+    public MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException {
+        Optional<MonthlyBudget> budgetToUpdate = monthlyBudgetRepository.findOne(budgetId);
+
+        if (budgetToUpdate.isPresent()) {
+            if (budgetToUpdate.get().getUser().getId() != monthlyBudgetDto.getUserId()) {
+                throw new ServiceException("Not allowed to modify this resource");
+            }
+
+            MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
+            monthlyBudget.setId(budgetId);
+            Optional<MonthlyBudget> updatedBudget = monthlyBudgetRepository.update(monthlyBudget);
+
+            if (updatedBudget.isPresent()) {
+                throw new ServiceException("An error occurred while trying to modify this resource");
+            }
+
+            return MonthlyBudgetViewModel.fromMonthlyBudget(monthlyBudget);
+        }
+        else {
+            throw new ServiceException("This resource doesn't exist");
+        }
     }
 }

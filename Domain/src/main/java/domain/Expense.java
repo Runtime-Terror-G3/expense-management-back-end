@@ -1,6 +1,7 @@
 package domain;
 
 import dto.ExpenseDto;
+import viewmodel.ExpenseViewModel;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,6 +18,13 @@ public class Expense implements Entity<Integer> {
         this.category = category;
         this.date = date;
         this.user = user;
+    }
+
+    public Expense(int id, double amount, ExpenseCategory category, LocalDateTime date) {
+        this.id = id;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
     }
 
     public Expense() {
@@ -74,6 +82,10 @@ public class Expense implements Entity<Integer> {
                 expenseDto.getDate(),
                 new User(expenseDto.getUserId())
         );
+    }
+
+    public  ExpenseViewModel toExpenseViewModel(){
+        return new ExpenseViewModel(this.id,this.amount,this.category,this.date);
     }
 
     @Override

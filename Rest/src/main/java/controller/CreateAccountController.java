@@ -11,6 +11,9 @@ import service.IService;
 import utils.Utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,7 +33,8 @@ public class CreateAccountController {
             String password = new String(Utils.hexStringToByteArray((String) params.get("password")));
             String firstName = String.valueOf(params.get("firstName"));
             String lastName = String.valueOf(params.get("lastName"));
-            Date dateOfBirth = new Date(new Timestamp((Integer) params.get("dateOfBirth")).getTime());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateOfBirth = formatter.parse((String) params.get("dateOfBirth"));
 
             Optional<User> optionalUser = service.createAccount(email, firstName, lastName, dateOfBirth, password);
 
@@ -39,7 +43,7 @@ public class CreateAccountController {
             } else {
                 return new ResponseEntity<>("Could not create account!", HttpStatus.CONFLICT);
             }
-        } catch(JSONException | IllegalArgumentException e) {
+        } catch(JSONException | IllegalArgumentException | ParseException e) {
             return new ResponseEntity<>("Invalid request", HttpStatus.BAD_REQUEST);
         }
     }

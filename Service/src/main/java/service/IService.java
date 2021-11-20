@@ -1,5 +1,6 @@
 package service;
 
+import domain.Expense;
 import domain.User;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
@@ -44,4 +45,36 @@ public interface IService {
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
 
     MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
+    /**
+     * delete an expense
+     * @param expenseId-id of the expense
+     * @param userId-id of the user who make the request
+     * @return-a ServiceEmptyResponse with status:
+     * 200-succes
+     * 403-the user who make the request isn't the user with this expense
+     * 500-internal server error
+     * 404-expense not found
+     */
+    ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException;
+/*
+     * Get expenses filtered by a date interval
+     * @param userId id of the user the expenses belong to
+     * @param category category of the expenses
+     * @param startDate unix timestamp for the beginning of the interval
+     * @param endDate unix timestamp for the end of the interval
+     * @return a collection of expenses
+     * @throws ServiceException if the parameters are faulty
+     */
+    Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;
+
+    /**
+     * Updates a monthly budget
+     * @param budgetId id of the budget to be updated
+     * @param monthlyBudgetDto a dto object of the monthly budget to be updated
+     * @return the viewModel of the updated monthly budget
+     * @throws ServiceException if the budget can't be updated
+     */
+    MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
 }
