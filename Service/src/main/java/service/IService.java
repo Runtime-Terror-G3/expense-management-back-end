@@ -1,6 +1,7 @@
 package service;
 
 import domain.Expense;
+import domain.MonthlyBudget;
 import domain.User;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
@@ -77,4 +78,5 @@ public interface IService {
      */
     MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 
+    Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException;
 }

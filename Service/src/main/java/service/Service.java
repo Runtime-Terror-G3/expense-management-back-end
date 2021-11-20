@@ -238,4 +238,15 @@ public class Service implements IService {
             throw new ServiceException("This resource doesn't exist");
         }
     }
+
+    @Override
+    public Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException {
+        if(startDate.after(endDate)) {
+            throw new ServiceException("Start date should be less than end date!");
+        }
+
+        return MonthlyBudgetViewModel.fromMonthlyBudgetList(
+                monthlyBudgetRepository.findByFilter(userId, startDate, endDate)
+        );
+    }
 }
