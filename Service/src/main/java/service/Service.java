@@ -260,6 +260,6 @@ public class Service implements IService {
         if (!granularity.equals("YEAR") && !granularity.equals("MONTH") && !granularity.equals("DAY"))
             throw new ServiceException("The granularity should be year, month or day");
 
-        return expenseRepository.findTotalExpenseInTimeByGranularity(userId, granularity, startDate, endDate, category);
+        return expenseRepository.findTotalExpensesInTimeByGranularity(userId, granularity, startDate, endDate, category);
     }
 }

@@ -16,5 +16,5 @@ public interface IExpenseRepository extends IRepository<Integer, Expense> {
      */
     Iterable<Expense> findByFilter(int userId, String category, long startDate, long endDate);
 
-    Iterable<TotalExpensesDto> findTotalExpenseInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category);
+    Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category);
 }

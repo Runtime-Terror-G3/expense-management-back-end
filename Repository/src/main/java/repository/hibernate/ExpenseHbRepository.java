@@ -66,7 +66,7 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
     }
 
     @Override
-    public Iterable<TotalExpensesDto> findTotalExpenseInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) {
+    public Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
