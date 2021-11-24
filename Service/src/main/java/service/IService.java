@@ -1,6 +1,7 @@
 package service;
 
 import domain.Expense;
+import domain.TotalExpensesDto;
 import domain.User;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
@@ -8,6 +9,7 @@ import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -79,4 +81,6 @@ public interface IService {
 
 
     ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
+
+    Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException;
 }
