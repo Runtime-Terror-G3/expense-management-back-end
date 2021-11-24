@@ -254,7 +254,7 @@ public class Service implements IService {
     @Override
     public Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException {
         if(startDate.isAfter(endDate))
-            throw new ServiceException("The start date should be after the end date");
+            throw new ServiceException("The start date should be before the end date");
 
         granularity = granularity.toUpperCase();
         if (!granularity.equals("YEAR") && !granularity.equals("MONTH") && !granularity.equals("DAY"))
