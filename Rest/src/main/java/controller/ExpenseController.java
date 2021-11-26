@@ -31,8 +31,8 @@ public class ExpenseController {
 
 
     @DeleteMapping("/delete-expense/{expenseId}")
-    public ResponseEntity<?> delete(@PathVariable int expenseId,@RequestBody String body){
-        Optional<User> user=service.getTokenUser(body);
+    public ResponseEntity<?> delete(@PathVariable int expenseId,@RequestHeader("Authorization") String token){
+        Optional<User> user=service.getTokenUser(token);
         if(user.isPresent()) {
             int userId=user.get().getId();
             try {
@@ -52,12 +52,12 @@ public class ExpenseController {
     }
     @GetMapping("/get-expenses")
     public ResponseEntity<?> getExpenses(
-        @RequestBody String body,
+            @RequestHeader("Authorization") String token,
         @RequestParam  String category,
         @RequestParam long startDate,
         @RequestParam long endDate
     ){
-        Optional<User> user=service.getTokenUser(body);
+        Optional<User> user=service.getTokenUser(token);
         if(user.isPresent()) {
             int userId = user.get().getId();
             try {

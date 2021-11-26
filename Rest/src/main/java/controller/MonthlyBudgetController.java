@@ -26,9 +26,10 @@ public class MonthlyBudgetController {
     @DeleteMapping("/delete-monthly-budget/{budgetId}")
     public ResponseEntity<?> deleteMonthlyBudget(
             @PathVariable int budgetId,
-            @RequestBody String body
+            @RequestHeader("Authorization") String token
     ){
-        Optional<User> user=service.getTokenUser(body);
+
+        Optional<User> user=service.getTokenUser(token);
         if(user.isPresent()) {
             int userId = user.get().getId();
             ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId, userId);
