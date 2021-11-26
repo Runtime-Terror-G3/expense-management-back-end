@@ -3,6 +3,7 @@ package service;
 import domain.Expense;
 import domain.TotalExpensesDto;
 import domain.User;
+import domain.UserRequest;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 import service.exception.ServiceException;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 public interface IService {
     /**
-     * Creates an account
+     * Creates an account which is not validated
      * @param email the email to be associated with the account
      * @param firstName user's first name
      * @param lastName user's last name
@@ -23,9 +24,16 @@ public interface IService {
      * @param password hex string containing the password
      * @return an Optional
      * - empty if successful
-     * - containing the user created by the given parameters, otherwise
+     * - containing the userRequest created by the given parameters, otherwise
      */
-    Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password);
+    Optional<UserRequest> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password);
+
+    /**
+     * Activates the account corresponding to the UserRequest with the given activation token
+     * @param activationToken - activation token used to identify UserRequest
+     * @return true if the activation is successful and false otherwise
+     */
+    boolean activateAccount(String activationToken);
 
     Optional<User> login(String email, String password);
 
@@ -78,7 +86,6 @@ public interface IService {
      * @throws ServiceException if the budget can't be updated
      */
     MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
-
 
     ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
 

@@ -1,5 +1,7 @@
 package service.mail;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -24,6 +26,7 @@ import javax.mail.internet.MimeMessage;
  *       (6.2) override personalizeBody
  * (7) call EmailSender.sendEmail in code
  */
+@Component
 public class EmailService implements IEmailService {
 
     private static String host = "smtp.gmail.com";

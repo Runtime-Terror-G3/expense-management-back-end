@@ -65,8 +65,11 @@ public class UserRequestHbRepository extends AbstractHbRepository<Integer, UserR
             if (existingUserRequest == null)
                 session.save(userRequest);
             else{
-                userRequest.setId(existingUserRequest.getId());
-                session.update(userRequest);
+                existingUserRequest.setFirstName(userRequest.getFirstName());
+                existingUserRequest.setLastName(userRequest.getLastName());
+                existingUserRequest.setDateOfBirth(userRequest.getDateOfBirth());
+                existingUserRequest.setPasswordHash(userRequest.getPasswordHash());
+                existingUserRequest.setActivationToken(userRequest.getActivationToken());
             }
 
             transaction.commit();
