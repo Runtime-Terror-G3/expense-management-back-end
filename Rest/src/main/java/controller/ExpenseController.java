@@ -1,5 +1,6 @@
 package controller;
 
+import domain.User;
 import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,6 +11,7 @@ import service.IService;
 import service.exception.ServiceException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -28,32 +30,44 @@ public class ExpenseController {
     }
 
 
-    @DeleteMapping("/delete-expense/{expenseId}/{userId}")
-    public ResponseEntity<?> delete(@PathVariable int expenseId,@PathVariable int userId){
-        //TODO get userId from token; remove userId param
-        try {
-            return new ResponseEntity<>(service.deleteExpense(expenseId,userId),HttpStatus.OK);
-        }catch (ServiceException e){
-            if(e.getMessage().equals("Forbidden access to this expense"))
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.FORBIDDEN);
-            else if(e.getMessage().equals("Internal server error"))
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-            else
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+    @DeleteMapping("/delete-expense/{expenseId}")
+    public ResponseEntity<?> delete(@PathVariable int expenseId,@RequestBody String body){
+        Optional<User> user=service.getTokenUser(body);
+        if(user.isPresent()) {
+            int userId=user.get().getId();
+            try {
+                return new ResponseEntity<>(service.deleteExpense(expenseId, userId), HttpStatus.OK);
+            } catch (ServiceException e) {
+                if (e.getMessage().equals("Forbidden access to this expense"))
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+                else if (e.getMessage().equals("Internal server error"))
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                else
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
+        }
+        else{
+            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
         }
     }
     @GetMapping("/get-expenses")
     public ResponseEntity<?> getExpenses(
-        @RequestParam int userId,
+        @RequestBody String body,
         @RequestParam  String category,
         @RequestParam long startDate,
         @RequestParam long endDate
     ){
-        //TODO get userId from token; remove userId param
-        try {
-            return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
-        } catch (ServiceException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        Optional<User> user=service.getTokenUser(body);
+        if(user.isPresent()) {
+            int userId = user.get().getId();
+            try {
+                return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
+            } catch (ServiceException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        else{
+            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
         }
 
     }
