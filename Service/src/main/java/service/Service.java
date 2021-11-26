@@ -2,9 +2,7 @@ package service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import domain.MonthlyBudget;
-import domain.Expense;
-import domain.User;
+import domain.*;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 import org.json.JSONObject;
@@ -17,6 +15,7 @@ import repository.IUserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.*;
 
 import service.exception.ServiceException;
@@ -250,5 +249,17 @@ public class Service implements IService {
         else {
             throw new ServiceException("This resource doesn't exist");
         }
+    }
+
+    @Override
+    public Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException {
+        if(startDate.isAfter(endDate))
+            throw new ServiceException("The start date should be before the end date");
+
+        granularity = granularity.toUpperCase();
+        if (!granularity.equals("YEAR") && !granularity.equals("MONTH") && !granularity.equals("DAY"))
+            throw new ServiceException("The granularity should be year, month or day");
+
+        return expenseRepository.findTotalExpensesInTimeByGranularity(userId, granularity, startDate, endDate, category);
     }
 }

@@ -2,13 +2,14 @@ package controller;
 
 import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
-import service.ServiceEmptyResponse;
 import service.exception.ServiceException;
-import viewmodel.ExpenseViewModel;
+
+import java.time.LocalDate;
 
 @CrossOrigin
 @RestController
@@ -61,6 +62,20 @@ public class ExpenseController {
     public ResponseEntity<?> update(@RequestBody ExpenseDto expenseDto, @PathVariable int expenseId) {
         try {
             return new ResponseEntity<>(service.updateExpense(expenseDto, expenseId), HttpStatus.OK);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/total-expenses-in-time")
+    public ResponseEntity<?> getTotalExpensesInTime(
+            @RequestParam int userId,
+            @RequestParam String granularity,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam String category){
+        try {
+            return new ResponseEntity<>(service.getTotalExpensesInTime(userId, granularity, startDate, endDate, category), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

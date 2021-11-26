@@ -2,6 +2,7 @@ package repository.hibernate;
 
 import domain.Expense;
 import domain.ExpenseCategory;
+import domain.TotalExpensesDto;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -9,11 +10,9 @@ import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
 @Component
 public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> implements IExpenseRepository {
@@ -62,6 +61,39 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
             System.out.println(e.getMessage());
             if (transaction != null)
                 transaction.rollback();
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Query<TotalExpensesDto> sqlQuery;
+
+            String sqlQueryString = "select new domain.TotalExpensesDto(SUM(amount), MAX(date)) " +
+                    "from Expense where userid=:userId and date between :startDate and :endDate ";
+
+            category = category.substring(0,1).toUpperCase() + category.substring(1).toLowerCase();
+            if (category.equalsIgnoreCase("All")) {
+                sqlQueryString += "group by " + granularity + "(date)" + " order by MAX(date) desc";
+                sqlQuery = session.createQuery(sqlQueryString, TotalExpensesDto.class);
+            } else {
+                sqlQueryString += "and category=:category group by " + granularity + "(date)" + " order by MAX(date) desc";
+                sqlQuery = session.createQuery(sqlQueryString, TotalExpensesDto.class);
+                sqlQuery.setParameter("category", ExpenseCategory.valueOf(category));
+            }
+
+            List<TotalExpensesDto> expenses = sqlQuery.setParameter("userId", userId)
+                    .setParameter("startDate", startDate.atStartOfDay())
+                    .setParameter("endDate", endDate.atStartOfDay().plusHours(23).plusMinutes(59).plusSeconds(59)).list();
+            transaction.commit();
+            return expenses;
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }

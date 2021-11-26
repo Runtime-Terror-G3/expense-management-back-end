@@ -1,6 +1,9 @@
 package repository;
 
 import domain.Expense;
+import domain.TotalExpensesDto;
+
+import java.time.LocalDate;
 
 public interface IExpenseRepository extends IRepository<Integer, Expense> {
     /**
@@ -12,4 +15,6 @@ public interface IExpenseRepository extends IRepository<Integer, Expense> {
      * @return a collection containing the requested expenses
      */
     Iterable<Expense> findByFilter(int userId, String category, long startDate, long endDate);
+
+    Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category);
 }
