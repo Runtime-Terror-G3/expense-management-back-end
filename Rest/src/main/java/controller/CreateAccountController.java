@@ -50,7 +50,7 @@ public class CreateAccountController {
         }
     }
 
-    @PostMapping("/activate-account/")
+    @PostMapping("/activate-account")
     public ResponseEntity<?> activateAccount(@RequestBody String activationToken){
         if (service.activateAccount(activationToken))
             return new ResponseEntity<>(HttpStatus.OK);
