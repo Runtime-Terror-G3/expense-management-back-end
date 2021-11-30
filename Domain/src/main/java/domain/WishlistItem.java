@@ -88,7 +88,7 @@ public class WishlistItem implements Entity<Integer> {
 
     @Override
     public void setId(Integer integer) {
-        this.id=id;
+        this.id=integer;
     }
 
 
