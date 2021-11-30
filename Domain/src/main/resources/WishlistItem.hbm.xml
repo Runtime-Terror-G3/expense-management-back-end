@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="domain.WishlistItem" table="WishlistItems" lazy="false">
+        <id name="id" type="java.lang.Integer" column="id">
+            <generator class="increment"/>
+        </id>
+        <property name="title" type="java.lang.String" column="title"/>
+        <property name="price" type="double" column="price"/>
+        <property name="link" type="java.lang.String" column="link"/>
+        <property name="image" type="java.lang.String" column="image"/>
+        <property name="vendor" column="vendor">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">domain.WishlistItemVendor</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+        <many-to-one name="user" not-null="false" class="domain.User" column="userId" lazy="false"/>
+
+    </class>
+
+</hibernate-mapping>
