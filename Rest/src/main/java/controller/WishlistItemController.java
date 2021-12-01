@@ -26,6 +26,7 @@ public class WishlistItemController {
 
     @GetMapping("/get-wishlist-items")
     public ResponseEntity<?> getWishlistItems(@RequestParam int userId) {
-            return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
+        //TODO: get the userId from token
+        return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
     }
 }
