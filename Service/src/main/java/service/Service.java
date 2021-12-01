@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import domain.*;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
+import dto.WishlistItemDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import repository.IWishlistItemRepository;
+import service.exception.ServiceException;
+import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
+import viewmodel.WishlistItemViewModel;
+
+import java.util.Optional;
 
 @Component
 public class Service implements IService {
@@ -31,17 +39,22 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
+    @Autowired
+    private final IWishlistItemRepository wishlistItemRepository;
+
     private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
     private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
             IExpenseRepository expenseRepository,
-            IMonthlyBudgetRepository monthlyBudgetRepository
+            IMonthlyBudgetRepository monthlyBudgetRepository,
+            IWishlistItemRepository wishlistItemRepository
     ) {
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
         this.monthlyBudgetRepository = monthlyBudgetRepository;
+        this.wishlistItemRepository=wishlistItemRepository;
     }
 
     private static String hashPassword(String password) {
@@ -272,5 +285,27 @@ public class Service implements IService {
             throw new ServiceException("The granularity should be year, month or day");
 
         return expenseRepository.findTotalExpensesInTimeByGranularity(userId, granularity, startDate, endDate, category);
+    }
+
+    @Override
+    public WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException {
+        WishlistItem wishlistItem = WishlistItem.fromWishlistItemDto(wishlistItemDto);
+
+        Optional<WishlistItem> savedWishlistItem = wishlistItemRepository.save(wishlistItem);
+
+        if (savedWishlistItem.isPresent()) {
+            throw new ServiceException("An error occurred while saving the wishlist.");
+        }
+
+        return WishlistItemViewModel.fromWishlistItem(wishlistItem);
+    }
+
+    @Override
+    public Iterable<WishlistItemViewModel> getWishlistItems(int userId) {
+        //TODO: set price dynamically by vendor after task is implemented
+
+        return WishlistItemViewModel.fromWishlistItemList(
+                wishlistItemRepository.findByUser(userId)
+        );
     }
 }

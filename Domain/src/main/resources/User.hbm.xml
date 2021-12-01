@@ -23,6 +23,10 @@
             <key column="userId"/>
             <one-to-many class="domain.MonthlyBudget"/>
         </set>
+        <set name="wishlistItems" lazy="false">
+            <key column="userId"/>
+            <one-to-many class="domain.WishlistItem"/>
+        </set>
     </class>
 
 </hibernate-mapping>
