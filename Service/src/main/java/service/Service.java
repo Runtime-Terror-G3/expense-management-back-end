@@ -302,7 +302,7 @@ public class Service implements IService {
 
     @Override
     public Iterable<WishlistItemViewModel> getWishlistItems(int userId) {
-        //TODO: set price dynamically by vendor after task is implemented
+        //TODO: set price dynamically by vendor
 
         return WishlistItemViewModel.fromWishlistItemList(
                 wishlistItemRepository.findByUser(userId)
