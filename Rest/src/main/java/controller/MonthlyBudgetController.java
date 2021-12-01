@@ -1,16 +1,16 @@
 package controller;
 
-
-import dto.ExpenseDto;
-
 import dto.MonthlyBudgetDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
 import service.ServiceEmptyResponse;
 import service.exception.ServiceException;
+
+import java.util.Date;
 
 @CrossOrigin
 @RestController
@@ -49,6 +49,20 @@ public class MonthlyBudgetController {
     public ResponseEntity<?> updateMonthlyBudget(@PathVariable int budgetId, @RequestBody MonthlyBudgetDto monthlyBudgetDto) {
         try {
             return new ResponseEntity<>(service.updateMonthlyBudget(budgetId, monthlyBudgetDto), HttpStatus.OK);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-monthly-budgets")
+    public ResponseEntity<?> getMonthlyBudgets(
+            @RequestParam int userId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
+    ){
+        //TODO get userId from token; remove userId param
+        try {
+            return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

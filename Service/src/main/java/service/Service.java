@@ -253,6 +253,16 @@ public class Service implements IService {
     }
 
     @Override
+    public Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException {
+        if (startDate.after(endDate)) {
+            throw new ServiceException("Start date should be less than end date!");
+        }
+
+        return MonthlyBudgetViewModel.fromMonthlyBudgetList(
+                monthlyBudgetRepository.findByFilter(userId, startDate, endDate)
+        );
+    }
+
     public Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException {
         if (startDate.isAfter(endDate))
             throw new ServiceException("The start date should be before the end date");
