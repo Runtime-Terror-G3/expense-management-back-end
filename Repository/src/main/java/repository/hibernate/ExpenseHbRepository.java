@@ -2,18 +2,23 @@ package repository.hibernate;
 
 import domain.Expense;
 import domain.ExpenseCategory;
+import domain.TotalExpensesDto;
+import domain.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> implements IExpenseRepository {
@@ -42,7 +47,7 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
             if (!category.equalsIgnoreCase("ALL")) {
                 sqlQueryString += "and category=:category order by date desc";
                 sqlQuery = session.createQuery(sqlQueryString, Expense.class)
-                    .setParameter("category", ExpenseCategory.valueOf(category));
+                        .setParameter("category", ExpenseCategory.valueOf(category));
             } else {
                 sqlQueryString += "order by date desc";
                 sqlQuery = session.createQuery(sqlQueryString, Expense.class);
@@ -51,10 +56,10 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
                     .setParameter("userId", userId)
                     .setParameter("startDate",
                             LocalDateTime.ofInstant(Instant.ofEpochSecond(startDate),
-                                TimeZone.getDefault().toZoneId()))
+                                    TimeZone.getDefault().toZoneId()))
                     .setParameter("endDate",
                             LocalDateTime.ofInstant(Instant.ofEpochSecond(endDate),
-                                TimeZone.getDefault().toZoneId()))
+                                    TimeZone.getDefault().toZoneId()))
                     .list();
             transaction.commit();
             return expenses;
@@ -64,5 +69,89 @@ public class ExpenseHbRepository extends AbstractHbRepository<Integer, Expense> 
                 transaction.rollback();
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public Map<ExpenseCategory, Double> getTotalAmountByCategory(User user, LocalDateTime start, LocalDateTime end) {
+        try (Session session = sessionFactory.openSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+
+            CriteriaQuery<ExpenseCategoryAmountTuple> criteriaQuery = builder.createQuery(ExpenseCategoryAmountTuple.class);
+            Root<Expense> root = criteriaQuery.from(Expense.class);
+
+            Predicate predicateDate = builder.between(root.get("date"), start, end);
+            Predicate predicateUser = builder.equal(root.<User>get("user"), user);
+
+            criteriaQuery.where(builder.and(predicateUser, predicateDate));
+            criteriaQuery.groupBy(root.get("category"));
+            criteriaQuery.multiselect(root.get("category"), builder.sum(root.get("amount")));
+
+            Query<ExpenseCategoryAmountTuple> query = session.createQuery(criteriaQuery);
+            List<ExpenseCategoryAmountTuple> resultList = query.getResultList();
+
+            return resultList.stream()
+                    .collect(Collectors.toMap(ExpenseCategoryAmountTuple::getCategory, ExpenseCategoryAmountTuple::getAmount));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        }
+    }
+
+    public Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Query<TotalExpensesDto> sqlQuery;
+
+            String sqlQueryString = "select new domain.TotalExpensesDto(SUM(amount), MAX(date)) " +
+                    "from Expense where userid=:userId and date between :startDate and :endDate ";
+
+            category = category.substring(0, 1).toUpperCase() + category.substring(1).toLowerCase();
+            if (category.equalsIgnoreCase("All")) {
+                sqlQueryString += "group by " + granularity + "(date)" + " order by MAX(date) desc";
+                sqlQuery = session.createQuery(sqlQueryString, TotalExpensesDto.class);
+            } else {
+                sqlQueryString += "and category=:category group by " + granularity + "(date)" + " order by MAX(date) desc";
+                sqlQuery = session.createQuery(sqlQueryString, TotalExpensesDto.class);
+                sqlQuery.setParameter("category", ExpenseCategory.valueOf(category));
+            }
+
+            List<TotalExpensesDto> expenses = sqlQuery.setParameter("userId", userId)
+                    .setParameter("startDate", startDate.atStartOfDay())
+                    .setParameter("endDate", endDate.atStartOfDay().plusHours(23).plusMinutes(59).plusSeconds(59)).list();
+            transaction.commit();
+            return expenses;
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+}
+
+class ExpenseCategoryAmountTuple {
+    private final ExpenseCategory category;
+    private final double amount;
+
+    public ExpenseCategoryAmountTuple(ExpenseCategory category, double amount) {
+        this.category = category;
+        this.amount = amount;
+    }
+
+    public ExpenseCategory getCategory() {
+        return category;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    @Override
+    public String toString() {
+        return "ExpenseCategoryAmountTuple{" +
+                "category=" + category +
+                ", amount=" + amount +
+                '}';
     }
 }
