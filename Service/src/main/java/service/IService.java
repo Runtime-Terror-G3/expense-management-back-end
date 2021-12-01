@@ -2,11 +2,15 @@ package service;
 
 import domain.Expense;
 import domain.ExpenseCategory;
+import domain.TotalExpensesDto;
 import domain.User;
 import dto.ExpenseDto;
+import dto.MonthlyBudgetDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
@@ -15,11 +19,12 @@ import java.util.Optional;
 public interface IService {
     /**
      * Creates an account
-     * @param email the email to be associated with the account
-     * @param firstName user's first name
-     * @param lastName user's last name
+     *
+     * @param email       the email to be associated with the account
+     * @param firstName   user's first name
+     * @param lastName    user's last name
      * @param dateOfBirth unix time
-     * @param password hex string containing the password
+     * @param password    hex string containing the password
      * @return an Optional
      * - empty if successful
      * - containing the user created by the given parameters, otherwise
@@ -33,9 +38,10 @@ public interface IService {
     Optional<User> getTokenUser(String token);
 
     /**
-        Deletes a monthly budget of a given user
+     * Deletes a monthly budget of a given user
+     *
      * @param budgetId id of the budget to be deleted
-     * @param userId id of the user who requested the deletion
+     * @param userId   id of the user who requested the deletion
      * @return a ServiceEmptyResponse with status=200 in case of success
      * a ServiceEmptyResponse with status=403 in case the budget with
      * the given id is not owned by the user with the given userId
@@ -45,7 +51,22 @@ public interface IService {
 
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
 
+    MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
     /**
+     * delete an expense
+     *
+     * @param expenseId-id of the expense
+     * @param userId-id    of the user who make the request
+     * @return-a ServiceEmptyResponse with status:
+     * 200-succes
+     * 403-the user who make the request isn't the user with this expense
+     * 500-internal server error
+     * 404-expense not found
+     */
+    ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException;
+
+    /*
      * Get expenses filtered by a date interval
      * @param userId id of the user the expenses belong to
      * @param category category of the expenses
@@ -58,10 +79,24 @@ public interface IService {
 
     /**
      * Method for retrieving the total amount of a user's expenses within a time period, grouped by expense category
+     *
      * @param userId, identifier of the user whose expenses are taken into account
-     * @param start, the start of the considered time period
-     * @param end, the end of the considered time period
+     * @param start,  the start of the considered time period
+     * @param end,    the end of the considered time period
      * @return a {@code Map} where each key represents an {@code ExpenseCategory} and the value, the total amount of expenses of that category
      */
     Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Updates a monthly budget
+     * @param budgetId id of the budget to be updated
+     * @param monthlyBudgetDto a dto object of the monthly budget to be updated
+     * @return the viewModel of the updated monthly budget
+     * @throws ServiceException if the budget can't be updated
+     */
+    MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
+
+    ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
+
+    Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException;
 }
