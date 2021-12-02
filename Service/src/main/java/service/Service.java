@@ -31,7 +31,6 @@ import viewmodel.WishlistItemViewModel;
 
 import java.util.Optional;
 
-
 @Component
 public class Service implements IService {
     @Autowired
@@ -299,5 +298,14 @@ public class Service implements IService {
         }
 
         return WishlistItemViewModel.fromWishlistItem(wishlistItem);
+    }
+
+    @Override
+    public Iterable<WishlistItemViewModel> getWishlistItems(int userId) {
+        //TODO: set price dynamically by vendor
+
+        return WishlistItemViewModel.fromWishlistItemList(
+                wishlistItemRepository.findByUser(userId)
+        );
     }
 }

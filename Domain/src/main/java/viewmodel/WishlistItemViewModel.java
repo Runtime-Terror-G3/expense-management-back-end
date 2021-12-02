@@ -5,6 +5,8 @@ import domain.WishlistItemVendor;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class WishlistItemViewModel implements Serializable {
     private int id;
@@ -97,5 +99,11 @@ public class WishlistItemViewModel implements Serializable {
                 wishlistItem.getImage(),
                 wishlistItem.getVendor()
         );
+    }
+
+    public static Iterable<WishlistItemViewModel> fromWishlistItemList(Iterable<WishlistItem> wishlistItems) {
+        return StreamSupport.stream(wishlistItems.spliterator(), false)
+                .map(WishlistItemViewModel::fromWishlistItem)
+                .collect(Collectors.toList());
     }
 }

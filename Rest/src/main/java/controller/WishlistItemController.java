@@ -23,4 +23,10 @@ public class WishlistItemController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/get-wishlist-items")
+    public ResponseEntity<?> getWishlistItems(@RequestParam int userId) {
+        //TODO: get the userId from token
+        return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
+    }
 }

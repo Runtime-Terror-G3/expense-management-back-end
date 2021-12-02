@@ -112,4 +112,5 @@ public interface IService {
      */
     WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException;
 
+    Iterable<WishlistItemViewModel> getWishlistItems(int userId);
 }
