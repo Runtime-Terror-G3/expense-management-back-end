@@ -5,25 +5,31 @@ import com.auth0.jwt.algorithms.Algorithm;
 import domain.*;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
+import dto.WishlistItemDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
+import service.exception.ServiceException;
+import viewmodel.ExpenseViewModel;
+import viewmodel.MonthlyBudgetViewModel;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
+import repository.IWishlistItemRepository;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
+import viewmodel.WishlistItemViewModel;
 
 import java.util.Optional;
-
 
 @Component
 public class Service implements IService {
@@ -33,17 +39,22 @@ public class Service implements IService {
     private final IExpenseRepository expenseRepository;
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
+    @Autowired
+    private final IWishlistItemRepository wishlistItemRepository;
+
     private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
     private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
 
     public Service(
             IUserRepository userRepository,
             IExpenseRepository expenseRepository,
-            IMonthlyBudgetRepository monthlyBudgetRepository
+            IMonthlyBudgetRepository monthlyBudgetRepository,
+            IWishlistItemRepository wishlistItemRepository
     ) {
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
         this.monthlyBudgetRepository = monthlyBudgetRepository;
+        this.wishlistItemRepository=wishlistItemRepository;
     }
 
     private static String hashPassword(String password) {
@@ -85,21 +96,21 @@ public class Service implements IService {
             String encoded_payload = token.split("\\.")[1];
             JSONObject payload = new JSONObject(new String(Base64.getDecoder().decode(encoded_payload)));
 
-            int id = (int)payload.get("id");
-            long iat = (long)payload.get("iat"),
-                exp = (long)payload.get("exp");
-            String first_name = (String)payload.get("first_name"),
-                    last_name = (String)payload.get("last_name");
+            int id = (int) payload.get("id");
+            long iat = (long) payload.get("iat"),
+                    exp = (long) payload.get("exp");
+            String first_name = (String) payload.get("first_name"),
+                    last_name = (String) payload.get("last_name");
 
             String newToken = generateJWT(id, first_name, last_name, iat, exp);
             long currentTime = System.currentTimeMillis();
 
-            if(!newToken.equals(token) || exp < currentTime) {
+            if (!newToken.equals(token) || exp < currentTime) {
                 return Optional.empty();
             }
 
             return userRepository.findOne(id);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
@@ -155,7 +166,7 @@ public class Service implements IService {
 
 
     @Override
-    public ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException{
+    public ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException {
 
         Optional<Expense> expense = expenseRepository.findOne(expenseId);
 
@@ -168,18 +179,17 @@ public class Service implements IService {
 
             if (!expenseToDelete.isPresent()) {
                 throw new ServiceException("Internal server error");
-            }else{
+            } else {
                 return expenseToDelete.get().toExpenseViewModel();
             }
-        }
-        else{
-            
+        } else {
+
             throw new ServiceException("This expense doesn't exist");
         }
     }
 
     public Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException {
-        if(endDate<startDate)
+        if (endDate < startDate)
             throw new ServiceException("Start date should be less than end date!");
 
         return expenseRepository.findByFilter(userId, category, startDate, endDate);
@@ -213,10 +223,15 @@ public class Service implements IService {
     }
 
     @Override
+    public Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end) {
+        return expenseRepository.getTotalAmountByCategory(new User(userId), start, end);
+    }
+
+    @Override
     public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
         // if the email is already used, another account with the same email cannot be created
         Optional<User> existingUser = userRepository.findByEmail(email);
-        if(existingUser.isPresent())
+        if (existingUser.isPresent())
             return existingUser;
 
         String passwordHash = hashPassword(password);
@@ -245,15 +260,24 @@ public class Service implements IService {
             }
 
             return MonthlyBudgetViewModel.fromMonthlyBudget(monthlyBudget);
-        }
-        else {
+        } else {
             throw new ServiceException("This resource doesn't exist");
         }
     }
 
     @Override
+    public Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException {
+        if (startDate.after(endDate)) {
+            throw new ServiceException("Start date should be less than end date!");
+        }
+
+        return MonthlyBudgetViewModel.fromMonthlyBudgetList(
+                monthlyBudgetRepository.findByFilter(userId, startDate, endDate)
+        );
+    }
+
     public Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException {
-        if(startDate.isAfter(endDate))
+        if (startDate.isAfter(endDate))
             throw new ServiceException("The start date should be before the end date");
 
         granularity = granularity.toUpperCase();
@@ -261,5 +285,27 @@ public class Service implements IService {
             throw new ServiceException("The granularity should be year, month or day");
 
         return expenseRepository.findTotalExpensesInTimeByGranularity(userId, granularity, startDate, endDate, category);
+    }
+
+    @Override
+    public WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException {
+        WishlistItem wishlistItem = WishlistItem.fromWishlistItemDto(wishlistItemDto);
+
+        Optional<WishlistItem> savedWishlistItem = wishlistItemRepository.save(wishlistItem);
+
+        if (savedWishlistItem.isPresent()) {
+            throw new ServiceException("An error occurred while saving the wishlist.");
+        }
+
+        return WishlistItemViewModel.fromWishlistItem(wishlistItem);
+    }
+
+    @Override
+    public Iterable<WishlistItemViewModel> getWishlistItems(int userId) {
+        //TODO: set price dynamically by vendor
+
+        return WishlistItemViewModel.fromWishlistItemList(
+                wishlistItemRepository.findByUser(userId)
+        );
     }
 }

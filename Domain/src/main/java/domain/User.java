@@ -16,6 +16,7 @@ public class User implements Entity<Integer> {
     private String passwordHash;
     private Set<Expense> expenses;
     private Set<MonthlyBudget> budgets;
+    private Set<WishlistItem> wishlistItems;
 
     public User(String email, String firstName, String lastName, Date dateOfBirth, String passwordHash) {
         this.email = email;
@@ -119,5 +120,13 @@ public class User implements Entity<Integer> {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, firstName, lastName);
+    }
+
+    public Set<WishlistItem> getWishlistItems() {
+        return wishlistItems;
+    }
+
+    public void setWishlistItems(Set<WishlistItem> wishlistItems) {
+        this.wishlistItems = wishlistItems;
     }
 }
