@@ -1,5 +1,6 @@
 package controller;
 
+import domain.User;
 import dto.MonthlyBudgetDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,6 +12,7 @@ import service.ServiceEmptyResponse;
 import service.exception.ServiceException;
 
 import java.util.Date;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -20,20 +22,33 @@ public class MonthlyBudgetController {
     @Autowired
     private IService service;
 
-    @DeleteMapping("/delete-monthly-budget/{budgetId}/{userId}")
+    @DeleteMapping("/delete-monthly-budget/{budgetId}")
     public ResponseEntity<?> deleteMonthlyBudget(
             @PathVariable int budgetId,
-            @PathVariable int userId
+            @RequestHeader("Authorization") String bearerToken
     ){
-        // TODO - get userId using authorization method; return unauthorized if is not valid; remove userId from path
-        ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId,userId);
-        switch (response.getStatus()){
-            case 403:
-                return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.FORBIDDEN);
-            case 500:
-                return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
+            String token = bearerToken.substring(7);
+            Optional<User> user = service.getTokenUser(token);
+            if (user.isPresent()) {
+                int userId = user.get().getId();
+                ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId, userId);
+                switch (response.getStatus()) {
+                    case 403:
+                        return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.FORBIDDEN);
+                    case 500:
+                        return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+            }
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        else{
+            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping("add-monthly-budget")
@@ -56,15 +71,28 @@ public class MonthlyBudgetController {
 
     @GetMapping("/get-monthly-budgets")
     public ResponseEntity<?> getMonthlyBudgets(
-            @RequestParam int userId,
+            @RequestHeader("Authorization") String bearerToken,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
     ){
-        //TODO get userId from token; remove userId param
-        try {
-            return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
-        } catch (ServiceException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
+        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
+            String token = bearerToken.substring(7);
+            Optional<User> user = service.getTokenUser(token);
+            if (user.isPresent()) {
+                int userId = user.get().getId();
+                try {
+                    return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
+                } catch (ServiceException e) {
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+                }
+            }
+            else{
+                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+            }
+        }
+        else{
+            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
         }
     }
 }
