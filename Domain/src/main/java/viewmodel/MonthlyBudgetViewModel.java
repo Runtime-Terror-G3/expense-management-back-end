@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import domain.MonthlyBudget;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.List;
 
 public class MonthlyBudgetViewModel implements Serializable {
     private int id;
@@ -51,6 +53,16 @@ public class MonthlyBudgetViewModel implements Serializable {
 
                 monthlyBudget.getDate()
         );
+    }
+
+    public static Iterable<MonthlyBudgetViewModel> fromMonthlyBudgetList(Iterable<MonthlyBudget> monthlyBudgetList) {
+        List<MonthlyBudgetViewModel> monthlyBudgetViewModelList = new ArrayList<>();
+
+        for (MonthlyBudget monthlyBudget : monthlyBudgetList) {
+            monthlyBudgetViewModelList.add(fromMonthlyBudget(monthlyBudget));
+        }
+
+        return monthlyBudgetViewModelList;
     }
 
 

@@ -45,6 +45,7 @@ abstract class AbstractHbRepository<ID extends Serializable, E extends Entity<ID
             session.save(entity);
             transaction.commit();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
             if (transaction != null)
                 transaction.rollback();
