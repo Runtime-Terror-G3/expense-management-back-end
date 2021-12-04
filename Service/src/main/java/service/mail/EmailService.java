@@ -1,7 +1,8 @@
 package service.mail;
-
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -29,24 +30,23 @@ import javax.mail.internet.MimeMessage;
 @Component
 public class EmailService implements IEmailService {
 
-    private static String host = "smtp.gmail.com";
-    private static int port = 587; //465
-    private static boolean debug = true;
     private static String senderEmail = "expense.management.noreply@gmail.com";
     private static String password = "expenseTEST2021!@#";
-
 
     private Properties getProperties(){
         Properties props = new Properties();
 
-        props.put( "mail.smtp.auth", "true" );
-        props.put( "mail.smtp.host", host );
-        props.put( "mail.smtp.port", port );
-        props.put( "mail.smtp.starttls.enable", "true" );
-        props.put( "mail.debug", debug );
-        props.put( "mail.smtp.socketFactory.port", port );
-        props.put( "mail.smtp.socketFactory.fallback", "false" );
-        props.put( "mail.smtp.ssl.trust", host );
+        String mailConfigPath = getClass()
+                .getClassLoader()
+                .getResource("mail/mail.properties")
+                .getPath();
+
+        try {
+            props.load(new FileInputStream(mailConfigPath));
+        } catch (IOException e) {
+            System.out.println("Error on loading mail.properties file");
+            e.printStackTrace();
+        }
 
         return props;
     }
@@ -75,7 +75,7 @@ public class EmailService implements IEmailService {
             MimeMessage message = new MimeMessage( session );
 
             message.setFrom( new InternetAddress( senderEmail ) );
-            message.setReplyTo( InternetAddress.parse( senderEmail ) );
+            message.setReplyTo(null);
             message.addRecipient( Message.RecipientType.TO, new InternetAddress( emailModel.getRecipientEmail() ) );
 
             message.setSubject( EmailSubjectFactory.getSubject(emailType) );
