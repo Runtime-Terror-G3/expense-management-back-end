@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebScraperService {
+public class WebScraperServiceAltex implements ProductParser{
 
     /**
      * Get the details of the product by a given link
@@ -47,13 +47,29 @@ public class WebScraperService {
     }
 
     /**
+     * Get the current price of the product
+     * @param wishlistItem the product to get the price for
+     * @return the current price of the given product
+     * @throws IOException if something goes wrong with the Jsoup get
+     */
+    public double computePrice(WishlistItem wishlistItem) throws IOException {
+        String url = wishlistItem.getLink();
+
+        Document doc = Jsoup.connect(url).get();
+
+        String priceInt = doc.select(".Price-int.leading-none").get(0).text().replace(".", "");
+        String priceDec = doc.select(".Price-int.leading-none").next().get(0).text().replace(',', '.');
+        return Double.parseDouble(priceInt + priceDec);
+    }
+
+    /**
      * Get a list of products from Altex by a search keyword
      * ( this is a wrapper for setting pageSize=24 and pageNumber=1 )
      * @param keyword the key by which the search is made
      * @return a list of WishlistItems
      * @throws IOException if something goes wrong with the Jsoup get
      */
-    List<WishlistItem> getProductsByKeyword(String keyword) throws IOException {
+    public List<WishlistItem> getProductsByKeyword(String keyword) throws IOException {
         return getProductsByKeyword(keyword, 24, 1);
     }
 
@@ -65,7 +81,7 @@ public class WebScraperService {
      * @return a list of WishlistItems
      * @throws IOException if something goes wrong with the Jsoup get
      */
-    List<WishlistItem> getProductsByKeyword(String keyword, int pageSize, int pageNumber) throws IOException{
+    public List<WishlistItem> getProductsByKeyword(String keyword, int pageSize, int pageNumber) throws IOException{
         List<WishlistItem> items = new ArrayList<>();
         String baseUrlAltex = "https://altex.ro/";
         String link = "https://fenrir.altex.ro/catalog/search/"+keyword+"?size="+pageSize+"&page="+pageNumber;
@@ -146,6 +162,7 @@ public class WebScraperService {
 
 
     public static void main(String[] args) {
+        // test getWishlistItemByUrl
         String[] urls = {
                 "https://altex.ro/laptop-gaming-asus-rog-strix-scar-15-g533qs-hq122-amd-ryzen-9-5900hx-pana-la-4-6ghz-15-6-qhd-32gb-ssd-2tb-nvidia-geforce-rtx-3080-16gb-free-dos-negru/cpd/LAPG533QSHQ122/",
                 "https://altex.ro/microsistem-audio-panasonic-sc-pm250ecs-20w-bluetooth-usb-cd-radio-fm-argintiu/cpd/MICSCPM250ECS/",
@@ -154,14 +171,24 @@ public class WebScraperService {
         };
         try {
             for (String url : urls) {
-                System.out.println(new WebScraperService().getWishlistItemByUrl(url));
+                System.out.println(new WebScraperServiceAltex().getWishlistItemByUrl(url));
             }
         } catch (ServiceException e) {
             e.printStackTrace();
         }
 
+        // test getProductsByKeyword
         try {
-            System.out.println(new WebScraperService().getProductsByKeyword("laptop"));
+            System.out.println(new WebScraperServiceAltex().getProductsByKeyword("laptop"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // test computePrice
+        WishlistItem item = new WishlistItem();
+        item.setLink("https://altex.ro/telefon-apple-iphone-11-128gb-purple/cpd/SMTMWM52RMA");
+        try {
+            System.out.println(new WebScraperServiceAltex().computePrice(item));
         } catch (IOException e) {
             e.printStackTrace();
         }
