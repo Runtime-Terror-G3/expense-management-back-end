@@ -30,9 +30,6 @@ import javax.mail.internet.MimeMessage;
 @Component
 public class EmailService implements IEmailService {
 
-    private static String senderEmail = "expense.management.noreply@gmail.com";
-    private static String password = "expenseTEST2021!@#";
-
     private Properties getProperties(){
         Properties props = new Properties();
 
@@ -58,7 +55,7 @@ public class EmailService implements IEmailService {
 
                     protected PasswordAuthentication getPasswordAuthentication() {
 
-                        return new PasswordAuthentication( senderEmail, password );
+                        return new PasswordAuthentication( props.getProperty("mail.account.address"), props.getProperty("mail.account.password") );
                     }
                 }
         );
@@ -74,7 +71,7 @@ public class EmailService implements IEmailService {
 
             MimeMessage message = new MimeMessage( session );
 
-            message.setFrom( new InternetAddress( senderEmail ) );
+            message.setFrom( new InternetAddress( props.getProperty("mail.account.address") ) );
             message.setReplyTo(null);
             message.addRecipient( Message.RecipientType.TO, new InternetAddress( emailModel.getRecipientEmail() ) );
 
