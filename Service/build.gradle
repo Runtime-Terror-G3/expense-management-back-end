@@ -17,6 +17,9 @@ dependencies {
     implementation 'com.auth0:java-jwt:3.18.2'
     implementation 'org.json:json:20210307'
 
+    // send mail
+    compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
     implementation project (':Domain')
     implementation project (':Repository')
 }

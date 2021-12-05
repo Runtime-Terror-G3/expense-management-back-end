@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import repository.IUserRepository;
 import java.util.Optional;
 
-import java.util.Optional;
-
 @Component
 public class UserHbRepository extends AbstractHbRepository<Integer, User> implements IUserRepository {
     @Override

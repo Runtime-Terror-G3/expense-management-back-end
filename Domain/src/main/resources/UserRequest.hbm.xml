@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="domain.UserRequest" table="UserRequests" lazy="false">
+        <id name="id" type="java.lang.Integer" column="id">
+            <generator class="increment"/>
+        </id>
+        <property name="email" type="java.lang.String" column="email"/>
+        <property name="firstName" type="java.lang.String" column="firstName"/>
+        <property name="lastName" type="java.lang.String" column="lastName"/>
+        <property name="dateOfBirth" type="java.util.Date" column="dateOfBirth"/>
+        <property name="passwordHash" type="java.lang.String" column="passwordHash"/>
+        <property name="activationToken" type="java.lang.String" column="activationToken"/>
+    </class>
+
+</hibernate-mapping>

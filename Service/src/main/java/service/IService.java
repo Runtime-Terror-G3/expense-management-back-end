@@ -4,6 +4,7 @@ import domain.Expense;
 import domain.ExpenseCategory;
 import domain.TotalExpensesDto;
 import domain.User;
+import domain.UserRequest;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 import dto.WishlistItemDto;
@@ -20,18 +21,24 @@ import java.util.Optional;
 
 public interface IService {
     /**
-     * Creates an account
-     *
-     * @param email       the email to be associated with the account
-     * @param firstName   user's first name
-     * @param lastName    user's last name
+     * Creates an account which is not validated
+     * @param email the email to be associated with the account
+     * @param firstName user's first name
+     * @param lastName user's last name
      * @param dateOfBirth unix time
-     * @param password    hex string containing the password
+     * @param password hex string containing the password
      * @return an Optional
      * - empty if successful
-     * - containing the user created by the given parameters, otherwise
+     * - containing the userRequest created by the given parameters, otherwise
      */
-    Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password);
+    Optional<UserRequest> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password);
+
+    /**
+     * Activates the account corresponding to the UserRequest with the given activation token
+     * @param activationToken - activation token used to identify UserRequest
+     * @return true if the activation is successful and false otherwise
+     */
+    boolean activateAccount(String activationToken);
 
     Optional<User> login(String email, String password);
 
@@ -40,10 +47,9 @@ public interface IService {
     Optional<User> getTokenUser(String token);
 
     /**
-     * Deletes a monthly budget of a given user
-     *
+        Deletes a monthly budget of a given user
      * @param budgetId id of the budget to be deleted
-     * @param userId   id of the user who requested the deletion
+     * @param userId id of the user who requested the deletion
      * @return a ServiceEmptyResponse with status=200 in case of success
      * a ServiceEmptyResponse with status=403 in case the budget with
      * the given id is not owned by the user with the given userId
@@ -57,9 +63,8 @@ public interface IService {
 
     /**
      * delete an expense
-     *
      * @param expenseId-id of the expense
-     * @param userId-id    of the user who make the request
+     * @param userId-id of the user who make the request
      * @return-a ServiceEmptyResponse with status:
      * 200-succes
      * 403-the user who make the request isn't the user with this expense
