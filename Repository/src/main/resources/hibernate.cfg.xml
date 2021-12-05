@@ -23,6 +23,7 @@
         <mapping resource="Expense.hbm.xml"/>
         <mapping resource="MonthlyBudget.hbm.xml"/>
         <mapping resource="UserRequest.hbm.xml"/>
+        <mapping resource="WishlistItem.hbm.xml"/>
 
     </session-factory>
 </hibernate-configuration>

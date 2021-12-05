@@ -1,7 +1,5 @@
 package domain;
 
-
-import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 
 import java.util.Date;
@@ -12,6 +10,12 @@ public class MonthlyBudget implements Entity<Integer> {
     private User user;
     private double income;
     private Date date;
+
+    public MonthlyBudget(int id, double income, Date date) {
+        this.id = id;
+        this.income = income;
+        this.date = date;
+    }
 
     public MonthlyBudget(User user, double income, Date date) {
         this.user = user;

@@ -1,17 +1,22 @@
 package service;
 
 import domain.Expense;
+import domain.ExpenseCategory;
 import domain.TotalExpensesDto;
 import domain.User;
 import domain.UserRequest;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
+import dto.WishlistItemDto;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
+import viewmodel.WishlistItemViewModel;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 public interface IService {
@@ -67,7 +72,8 @@ public interface IService {
      * 404-expense not found
      */
     ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException;
-/*
+
+    /*
      * Get expenses filtered by a date interval
      * @param userId id of the user the expenses belong to
      * @param category category of the expenses
@@ -79,6 +85,16 @@ public interface IService {
     Iterable<Expense> getExpenses(int userId, String category, long startDate, long endDate) throws ServiceException;
 
     /**
+     * Method for retrieving the total amount of a user's expenses within a time period, grouped by expense category
+     *
+     * @param userId, identifier of the user whose expenses are taken into account
+     * @param start,  the start of the considered time period
+     * @param end,    the end of the considered time period
+     * @return a {@code Map} where each key represents an {@code ExpenseCategory} and the value, the total amount of expenses of that category
+     */
+    Map<ExpenseCategory, Double> getExpenseTotalByCategory(int userId, LocalDateTime start, LocalDateTime end);
+
+    /**
      * Updates a monthly budget
      * @param budgetId id of the budget to be updated
      * @param monthlyBudgetDto a dto object of the monthly budget to be updated
@@ -87,7 +103,19 @@ public interface IService {
      */
     MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 
+    Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException;
+
     ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
 
     Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException;
+
+    /**
+     * save a wishlistItem-custom or normal(from search results)
+     * @param wishlistItemDto-the object to be saved
+     * @return-null if succes,the entity if save in DB fails
+     * @throws ServiceException
+     */
+    WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException;
+
+    Iterable<WishlistItemViewModel> getWishlistItems(int userId);
 }
