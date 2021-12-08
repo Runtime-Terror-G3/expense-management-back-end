@@ -358,4 +358,11 @@ public class Service implements IService {
                 wishlistItemRepository.findByUser(userId)
         );
     }
+
+    @Override
+    public Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId) {
+        return WishlistItemViewModel.fromWishlistItemList(
+                wishlistItemRepository.getAffordableWishlistItems(userId)
+        );
+    }
 }

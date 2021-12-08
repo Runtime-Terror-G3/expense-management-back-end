@@ -29,4 +29,11 @@ public class WishlistItemController {
         //TODO: get the userId from token
         return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
     }
+
+    @GetMapping("/get-affordable-wishlist-items")
+    public ResponseEntity<?> getAffordableWishlistItems(@RequestParam int userId) {
+        //TODO: get the userId from token
+
+        return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
+    }
 }

@@ -118,4 +118,11 @@ public interface IService {
     WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException;
 
     Iterable<WishlistItemViewModel> getWishlistItems(int userId);
+
+    /**
+     * Method for getting the affordable items in a user's wishlist based on his total savings
+     * @param userId - the id of the user
+     * @return a list of wishlistItemViewModels
+     */
+    Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
 }
