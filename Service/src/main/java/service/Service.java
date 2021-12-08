@@ -23,8 +23,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import repository.IUserRequestRepository;
 import repository.IWishlistItemRepository;
 import service.exception.ServiceException;
+import service.mail.ActivateAccountEmailModel;
+import service.mail.EmailType;
+import service.mail.IEmailService;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 import viewmodel.WishlistItemViewModel;
@@ -40,6 +44,10 @@ public class Service implements IService {
     @Autowired
     private final IMonthlyBudgetRepository monthlyBudgetRepository;
     @Autowired
+    private final IUserRequestRepository userRequestRepository;
+    @Autowired
+    private final IEmailService emailService;
+    @Autowired
     private final IWishlistItemRepository wishlistItemRepository;
 
     private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
@@ -49,11 +57,15 @@ public class Service implements IService {
             IUserRepository userRepository,
             IExpenseRepository expenseRepository,
             IMonthlyBudgetRepository monthlyBudgetRepository,
-            IWishlistItemRepository wishlistItemRepository
+            IUserRequestRepository userRequestRepository,
+            IWishlistItemRepository wishlistItemRepository,
+            IEmailService emailService
     ) {
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
         this.monthlyBudgetRepository = monthlyBudgetRepository;
+        this.userRequestRepository = userRequestRepository;
+        this.emailService = emailService;
         this.wishlistItemRepository=wishlistItemRepository;
     }
 
@@ -228,18 +240,56 @@ public class Service implements IService {
     }
 
     @Override
-    public Optional<User> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
+    public Optional<UserRequest> createAccount(String email, String firstName, String lastName, Date dateOfBirth, String password) {
         // if the email is already used, another account with the same email cannot be created
         Optional<User> existingUser = userRepository.findByEmail(email);
-        if (existingUser.isPresent())
-            return existingUser;
+
+        if(existingUser.isPresent())
+            return Optional.of(new UserRequest());
 
         String passwordHash = hashPassword(password);
+        String activationToken = generateJWT(0, email, firstName, 0,0);
 
-        User newUser = new User(email, firstName, lastName, dateOfBirth, passwordHash);
+        UserRequest newUserRequest = new UserRequest(email, firstName, lastName, dateOfBirth, passwordHash, activationToken);
+        Optional<UserRequest> savedUserRequest = userRequestRepository.saveOrUpdate(newUserRequest);
 
-        return userRepository.save(newUser);
+        if (savedUserRequest.isPresent())
+            return Optional.of(new UserRequest());
 
+        ActivateAccountEmailModel emailModel = new ActivateAccountEmailModel(email, firstName, activationToken);
+        emailService.sendMail(EmailType.ACTIVATE_ACCOUNT, emailModel);
+
+        return Optional.empty();
+
+    }
+
+    /**
+     * Activates the account corresponding to the UserRequest with the given activation token
+     *
+     * @param activationToken - activation token used to identify UserRequest
+     * @return true if the activation is successful and false otherwise
+     */
+    @Override
+    public boolean activateAccount(String activationToken) {
+        Optional<UserRequest> existingUserRequestOptional = userRequestRepository.findByActivationToken(activationToken);
+        if (existingUserRequestOptional.isEmpty())
+            return false;
+
+        UserRequest existingUserRequest = existingUserRequestOptional.get();
+        Optional<User> savedUser = userRepository.save(new User(existingUserRequest.getEmail(),
+                existingUserRequest.getFirstName(),
+                existingUserRequest.getLastName(),
+                existingUserRequest.getDateOfBirth(),
+                existingUserRequest.getPasswordHash()));
+
+        if (savedUser.isPresent())
+            return false;
+
+        Optional<UserRequest> deletedUserRequest = userRequestRepository.delete(existingUserRequest.getId());
+        if (deletedUserRequest.isEmpty())
+            return false;
+
+        return true;
     }
 
     @Override

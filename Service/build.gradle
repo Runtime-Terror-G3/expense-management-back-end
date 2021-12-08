@@ -18,6 +18,8 @@ dependencies {
     implementation 'org.json:json:20210307'
 
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.14.3'
+    // send mail
+    compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 
     implementation project (':Domain')
     implementation project (':Repository')
