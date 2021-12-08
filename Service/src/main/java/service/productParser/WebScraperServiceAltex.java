@@ -15,36 +15,8 @@ import java.util.List;
 
 public class WebScraperServiceAltex implements ProductParser{
 
-    /**
-     * Get the details of the product by a given link
-     * @param url the link to the product's page
-     * @return a WishlistItem containing the needed details about the product
-     * @throws ServiceException if something goes wrong while parsing the data (e.g. missing selector, unexpected data format)
-     */
-    public WishlistItem getWishlistItemByUrl(String url) throws ServiceException {
-        WishlistItem wishlistItem = new WishlistItem();
-        wishlistItem.setLink(url);
-        wishlistItem.setVendor(WishlistItemVendor.Altex);
-        wishlistItem.setTitle("");
-        try {
-            Document doc = Jsoup.connect(url).get();
-            String title = doc.select("div.mb-5 > div.mb-1 > h1 > div").get(0).text();
-
-            String imageUrl = doc.select("div.slick-slide.slick-active.slick-current").get(0).select("img").attr("src");
-
-            String priceInt = doc.select(".Price-int.leading-none").get(0).text().replace(".", "");
-            String priceDec = doc.select(".Price-int.leading-none").next().get(0).text().replace(',', '.');
-            double price = Double.parseDouble(priceInt + priceDec);
-
-            wishlistItem.setTitle(title);
-            wishlistItem.setPrice(price);
-            wishlistItem.setImage(imageUrl);
-        }catch (Exception exception){
-            throw new ServiceException("Something went wrong while trying to get the product details from Altex!\n"+exception.getMessage());
-        }
-
-        return wishlistItem;
-    }
+    private static final int PAGE_SIZE  = 24;
+    private static final int PAGE_NUMBER  = 1;
 
     /**
      * Get the current price of the product
@@ -72,7 +44,7 @@ public class WebScraperServiceAltex implements ProductParser{
      */
     @Override
     public List<WishlistItem> getProductsByKeyword(String keyword) throws IOException {
-        return getProductsByKeyword(keyword, 24, 1);
+        return getProductsByKeyword(keyword, PAGE_SIZE, PAGE_NUMBER);
     }
 
     /**
@@ -83,7 +55,7 @@ public class WebScraperServiceAltex implements ProductParser{
      * @return a list of WishlistItems
      * @throws IOException if something goes wrong with the Jsoup get
      */
-    public List<WishlistItem> getProductsByKeyword(String keyword, int pageSize, int pageNumber) throws IOException{
+    private List<WishlistItem> getProductsByKeyword(String keyword, int pageSize, int pageNumber) throws IOException{
         List<WishlistItem> items = new ArrayList<>();
         String baseUrlAltex = "https://altex.ro/";
         String link = "https://fenrir.altex.ro/catalog/search/"+keyword+"?size="+pageSize+"&page="+pageNumber;

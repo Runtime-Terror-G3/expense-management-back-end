@@ -1,6 +1,5 @@
 import domain.WishlistItem;
 import org.junit.jupiter.api.Test;
-import service.exception.ServiceException;
 import service.productParser.WebScraperServiceAltex;
 
 import java.io.IOException;
@@ -17,26 +16,10 @@ class WebScraperServiceAltexTest {
     WebScraperServiceAltex webScraper = new WebScraperServiceAltex();
 
     @Test
-    void testgetWishlistItemByUrl(){
-
-        System.out.println("testgetWishlistItemByUrl");
-        try {
-            for (String url : urls) {
-                WishlistItem item = webScraper.getWishlistItemByUrl(url);
-                System.out.println(item);
-                assert(item.getPrice()>0);
-            }
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Test
     void testGetProductsByKeyword(){
         System.out.println("testGetProductsByKeyword");
         try {
-            List<WishlistItem> items = webScraper.getProductsByKeyword("laptop");
+            List<WishlistItem> items = webScraper.getProductsByKeyword("telefon mobil");
             System.out.println(items);
             assert(items.size()>0);
         } catch (IOException e) {
