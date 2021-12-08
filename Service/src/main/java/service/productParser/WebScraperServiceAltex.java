@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import service.exception.ServiceException;
+import service.productParser.parserutils.URLSafety;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +26,12 @@ public class WebScraperServiceAltex implements ProductParser{
      * @throws IOException if something goes wrong with the Jsoup get
      */
     @Override
-    public double computePrice(WishlistItem wishlistItem) throws IOException {
+    public double computePrice(WishlistItem wishlistItem) throws IOException, ServiceException {
         String url = wishlistItem.getLink();
+
+        if(!URLSafety.isAltexValidURL(url)){
+            throw new ServiceException("The url for the current item is malformed and might be malicious!");
+        }
 
         Document doc = Jsoup.connect(url).get();
 
@@ -57,6 +62,7 @@ public class WebScraperServiceAltex implements ProductParser{
      */
     private List<WishlistItem> getProductsByKeyword(String keyword, int pageSize, int pageNumber) throws IOException{
         List<WishlistItem> items = new ArrayList<>();
+        keyword = URLSafety.sanitizeString(keyword);
         String baseUrlAltex = "https://altex.ro/";
         String link = "https://fenrir.altex.ro/catalog/search/"+keyword+"?size="+pageSize+"&page="+pageNumber;
 
