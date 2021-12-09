@@ -1,5 +1,7 @@
 package repository.hibernate;
 
+import domain.Expense;
+import domain.MonthlyBudget;
 import domain.WishlistItem;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -42,6 +44,35 @@ public class WishlistItemHbRepository extends AbstractHbRepository<Integer, Wish
             return wishlistItems;
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            if (transaction != null)
+                transaction.rollback();
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Iterable<WishlistItem> getAffordableWishlistItems(int userId) {
+        Transaction transaction = null;
+
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Query<WishlistItem> sqlQuery;
+
+            String sqlQueryString = "select w.id, w.title, w.price, w.link, w.image, w.vendor, w.userid " +
+                    "from wishlistitems w " +
+                    "where w.userid=:userId and w.price <= ((select sum(mb.income) from monthlybudgets mb where mb.userid=:userId) - (select sum(e.amount) from expenses e where e.userid=:userId))";
+
+            sqlQuery = session.createNativeQuery(sqlQueryString, WishlistItem.class);
+
+            List<WishlistItem> affordableItems = sqlQuery
+                    .setParameter("userId", userId)
+                    .list();
+            transaction.commit();
+
+            return affordableItems;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
             if (transaction != null)
                 transaction.rollback();
         }
