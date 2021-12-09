@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import service.exception.ServiceException;
 import service.productParser.parserutils.URLSafety;
 
 import java.io.IOException;
@@ -23,14 +22,14 @@ public class WebScraperServiceAltex implements ProductParser{
      * Get the current price of the product
      * @param wishlistItem the product to get the price for
      * @return the current price of the given product
-     * @throws IOException if something goes wrong with the Jsoup get
+     * @throws IOException if something goes wrong with the Jsoup get or the url is malicious
      */
     @Override
-    public double computePrice(WishlistItem wishlistItem) throws IOException, ServiceException {
+    public double computePrice(WishlistItem wishlistItem) throws IOException {
         String url = wishlistItem.getLink();
 
         if(!URLSafety.isAltexValidURL(url)){
-            throw new ServiceException("The url for the current item is malformed and might be malicious!");
+            throw new IOException("The url for the current item is malformed and might be malicious!");
         }
 
         Document doc = Jsoup.connect(url).get();

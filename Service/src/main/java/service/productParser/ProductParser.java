@@ -1,7 +1,6 @@
 package service.productParser;
 
 import domain.WishlistItem;
-import service.exception.ServiceException;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +19,6 @@ public interface ProductParser {
      * @param item, the item to compute the price for
      * @return the current price for {@param item}
      * @throws IOException, if retrieving the information from the vendor's website fails
-     * @throws ServiceException if the url of the item is not in the correct format
      */
-    double computePrice(WishlistItem item) throws IOException, ServiceException;
+    double computePrice(WishlistItem item) throws IOException;
 }

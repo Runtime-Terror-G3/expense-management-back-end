@@ -1,6 +1,5 @@
 import domain.WishlistItem;
 import org.junit.jupiter.api.Test;
-import service.exception.ServiceException;
 import service.productParser.WebScraperServiceAltex;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ class WebScraperServiceAltexTest {
             price = webScraper.computePrice(item);
             System.out.println(price);
             assert(price>0.0);
-        } catch (IOException | ServiceException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
