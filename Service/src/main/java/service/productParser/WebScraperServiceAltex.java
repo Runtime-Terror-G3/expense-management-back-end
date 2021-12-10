@@ -7,12 +7,14 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Component;
 import service.productParser.parserutils.URLSafety;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class WebScraperServiceAltex implements ProductParser{
 
     private static final int PAGE_SIZE  = 24;
