@@ -39,12 +39,6 @@ public class MonthlyBudgetController {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -79,12 +73,6 @@ public class MonthlyBudgetController {
             return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

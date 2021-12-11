@@ -34,12 +34,6 @@ public class WishlistItemController {
             return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

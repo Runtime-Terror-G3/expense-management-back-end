@@ -31,20 +31,24 @@ public class Utils {
         return data;
     }
 
-    public static Integer validateToken(String bearerToken, IService service) throws Exception {
-
+    /**
+     * Checks if a token is valid, the TokenException this throws should be handled by the GlobalExceptionHandler.
+     *
+     * @param bearerToken
+     * @param service
+     * @return the id of the user, if the token is valid.
+     * @throws AuthorizationException if the token is invalid
+     */
+    public static Integer validateToken(String bearerToken, IService service) throws AuthorizationException {
         if (bearerToken != null && bearerToken.startsWith("Bearer")) { //verify the token format
             String token = bearerToken.substring(7);
             Optional<User> user = service.getTokenUser(token);
-            if (user.isPresent()) { //verify if there is an user associated with the token
+
+            if (user.isPresent()) { //verify if the token is valid
                 return user.get().getId();
             }
-            else {
-                throw  new Exception("Unauthorized");
-            }
         }
-        else{
-            throw new Exception("Forbidden");
-        }
+
+        throw new AuthorizationException(Constants.AuthorizationExceptionCode.UNAUTHORIZED);
     }
 }

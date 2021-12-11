@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import utils.AuthorizationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -18,6 +19,36 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ){
         System.out.println("An exception occurred and it was handled by the global exception handler");
         ex.printStackTrace();
+
+        if(ex instanceof AuthorizationException) {
+            AuthorizationException authorizationException = (AuthorizationException) ex;
+            HttpStatus statusCode;
+            String message;
+
+            switch(authorizationException.code) {
+                case FORBIDDEN:
+                    message = "Access denied";
+                    statusCode = HttpStatus.FORBIDDEN;
+                case UNAUTHORIZED:
+                    message = "Not logged in";
+                    statusCode = HttpStatus.UNAUTHORIZED;
+                default:
+                    message = "Authorization error";
+                    statusCode = HttpStatus.UNAUTHORIZED;
+            }
+
+            if(authorizationException.getMessage() != null) {
+                message = authorizationException.getMessage();
+            }
+
+            handleExceptionInternal(
+                    ex,
+                    message,
+                    new HttpHeaders(),
+                    statusCode,
+                    request);
+        }
+
         return handleExceptionInternal(
                 ex,
                 "Internal Server Error",

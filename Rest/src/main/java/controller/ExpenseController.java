@@ -35,16 +35,13 @@ public class ExpenseController {
 
     @DeleteMapping("/delete-expense/{expenseId}")
     public ResponseEntity<?> delete(@PathVariable int expenseId, @RequestHeader("Authorization") String bearerToken) {
-
         try {
             int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.deleteExpense(expenseId, userId), HttpStatus.OK);
         }
         catch (Exception e ){
             String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message) || "Forbidden access to this expense".equals(message)) {
+            if ("Forbidden access to this expense".equals(message)) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
             } else if ("Internal server error".equals(message)) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -60,17 +57,12 @@ public class ExpenseController {
             @RequestParam long startDate,
             @RequestParam long endDate
     ) {
+        System.out.println("get");
         try {
             int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -97,12 +89,6 @@ public class ExpenseController {
             return new ResponseEntity<>(service.getTotalExpensesInTime(userId, granularity, startDate, endDate, category), HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -118,12 +104,6 @@ public class ExpenseController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch (Exception e ){
-            String message = e.getMessage();
-            if ("Unauthorized".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            } else if ("Forbidden".equals(message)) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
