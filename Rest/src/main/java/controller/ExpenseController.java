@@ -24,8 +24,11 @@ public class ExpenseController {
     private IService service;
 
     @PostMapping("/add-expense")
-    public ResponseEntity<?> create(@RequestBody ExpenseDto expenseDto) {
+    public ResponseEntity<?> create(@RequestBody ExpenseDto expenseDto, @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            expenseDto.setUserId(userId);
+
             return new ResponseEntity<>(service.addExpense(expenseDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -68,8 +71,12 @@ public class ExpenseController {
     }
 
     @PostMapping("/update-expense/{expenseId}")
-    public ResponseEntity<?> update(@RequestBody ExpenseDto expenseDto, @PathVariable int expenseId) {
+    public ResponseEntity<?> update(@RequestBody ExpenseDto expenseDto, @PathVariable int expenseId,
+                                    @RequestHeader("Authorization") String bearerToken ) {
         try {
+            int userId = validateToken(bearerToken, service);
+            expenseDto.setUserId(userId);
+
             return new ResponseEntity<>(service.updateExpense(expenseDto, expenseId), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

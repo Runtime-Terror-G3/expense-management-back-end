@@ -1,4 +1,6 @@
-package utils;
+package service.exception;
+
+import service.Constants;
 
 public class AuthorizationException extends RuntimeException{
     public Constants.AuthorizationExceptionCode code;

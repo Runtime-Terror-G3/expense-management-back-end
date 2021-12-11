@@ -1,4 +1,4 @@
-package utils;
+package service;
 
 public class Constants {
     public enum AuthorizationExceptionCode {

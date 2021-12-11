@@ -31,6 +31,10 @@ public class ExpenseDto implements Serializable {
         return userId;
     }
 
+    public void setUserId(int id) {
+        this.userId = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

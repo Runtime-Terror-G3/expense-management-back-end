@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
+import service.exception.AuthorizationException;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
@@ -211,15 +212,25 @@ public class Service implements IService {
 
     @Override
     public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException {
-        Expense expense = Expense.fromExpenseDto(expenseDto);
-        expense.setId(expenseId);
+        Expense newExpense = Expense.fromExpenseDto(expenseDto);
+        Optional<Expense> oldExpense = expenseRepository.findOne(expenseId);
 
-        Optional<Expense> updatedExpense = expenseRepository.update(expense);
+        if(oldExpense.isEmpty()) {
+            throw new ServiceException("Invalid expenseID");
+        }
+
+        if(newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
+            throw new AuthorizationException(Constants.AuthorizationExceptionCode.FORBIDDEN);
+        }
+
+        newExpense.setId(expenseId);
+
+        Optional<Expense> updatedExpense = expenseRepository.update(newExpense);
         if (updatedExpense.isPresent()) {
             throw new ServiceException("An error occurred while updating the expense.");
         }
 
-        return ExpenseViewModel.fromExpense(expense);
+        return ExpenseViewModel.fromExpense(newExpense);
     }
 
     @Override
