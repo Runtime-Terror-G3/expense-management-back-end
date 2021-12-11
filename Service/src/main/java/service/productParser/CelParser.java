@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class CelParser implements ProductParser {
     private static final String CEL_URL_SEARCH = "https://www.cel.ro/cauta/:keyword";
+    private static final int NUMBER_OF_PRODUCTS = 24;
 
     @Override
     public List<WishlistItem> getProductsByKeyword(String keyword) throws IOException {
@@ -21,6 +22,7 @@ public class CelParser implements ProductParser {
         return document
                 .select(".productlisting .product_data.productListing-tot .topArea")
                 .stream()
+                .limit(NUMBER_OF_PRODUCTS)
                 .map(element -> {
                     String title = element.select(".productListing-nume .productTitle a span").text();
                     double price = Double.parseDouble(element.select(".productListing-nume .price_part .pret_n .price").text());
