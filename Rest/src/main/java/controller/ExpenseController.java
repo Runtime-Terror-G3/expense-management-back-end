@@ -1,7 +1,6 @@
 package controller;
 
 import domain.ExpenseCategory;
-import domain.User;
 import dto.ExpenseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +13,8 @@ import service.exception.ServiceException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
+
+import static utils.Utils.validateToken;
 
 @CrossOrigin
 @RestController
@@ -36,28 +36,17 @@ public class ExpenseController {
     @DeleteMapping("/delete-expense/{expenseId}")
     public ResponseEntity<?> delete(@PathVariable int expenseId, @RequestHeader("Authorization") String bearerToken) {
 
-        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
-            String token = bearerToken.substring(7);
-            Optional<User> user = service.getTokenUser(token);
-            if (user.isPresent()) {
-                int userId = user.get().getId();
-                try {
-                    return new ResponseEntity<>(service.deleteExpense(expenseId, userId), HttpStatus.OK);
-                } catch (ServiceException e) {
-                    if (e.getMessage().equals("Forbidden access to this expense"))
-                        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                    else if (e.getMessage().equals("Internal server error"))
-                        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-                    else
-                        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-                }
-            }
-            else{
-                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
-            }
+        try {
+            int userId = validateToken(bearerToken, service);
+            return new ResponseEntity<>(service.deleteExpense(expenseId, userId), HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
+        catch (Exception e ){
+            return switch (e.getMessage()) {
+                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                case "Forbidden", "Forbidden access to this expense" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+                case "Internal server error" -> new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            };
         }
     }
 
@@ -68,26 +57,17 @@ public class ExpenseController {
             @RequestParam long startDate,
             @RequestParam long endDate
     ) {
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
-            String token = bearerToken.substring(7);
-            Optional<User> user = service.getTokenUser(token);
-            if (user.isPresent()) {
-                int userId = user.get().getId();
-                try {
-                    return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
-                } catch (ServiceException e) {
-                    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-                }
-            }
-            else{
-                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
-            }
+        try {
+            int userId = validateToken(bearerToken, service);
+            return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
+        catch (Exception e ){
+            return switch (e.getMessage()) {
+                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            };
         }
-
     }
 
     @PostMapping("/update-expense/{expenseId}")
@@ -107,23 +87,16 @@ public class ExpenseController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam String category) {
 
-        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
-            String token = bearerToken.substring(7);
-            Optional<User> user = service.getTokenUser(token);
-            if (user.isPresent()) {
-                int userId = user.get().getId();
-                try {
-                    return new ResponseEntity<>(service.getTotalExpensesInTime(userId, granularity, startDate, endDate, category), HttpStatus.OK);
-                } catch (ServiceException e) {
-                    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-                }
-            }
-            else{
-                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
-            }
+        try {
+            int userId = validateToken(bearerToken, service);
+            return new ResponseEntity<>(service.getTotalExpensesInTime(userId, granularity, startDate, endDate, category), HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
+        catch (Exception e ){
+            return switch (e.getMessage()) {
+                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            };
         }
     }
 
@@ -132,20 +105,17 @@ public class ExpenseController {
                                                         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
                                                         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
 
-        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
-            String token = bearerToken.substring(7);
-            Optional<User> user = service.getTokenUser(token);
-            if (user.isPresent()) {
-                int userId = user.get().getId();
-                Map<ExpenseCategory, Double> result = service.getExpenseTotalByCategory(userId, start, end);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-            else{
-                return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
-            }
+        try {
+            int userId = validateToken(bearerToken, service);
+            Map<ExpenseCategory, Double> result = service.getExpenseTotalByCategory(userId, start, end);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity<>("Forbidden",HttpStatus.FORBIDDEN);
+        catch (Exception e ){
+            return switch (e.getMessage()) {
+                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            };
         }
     }
 }
