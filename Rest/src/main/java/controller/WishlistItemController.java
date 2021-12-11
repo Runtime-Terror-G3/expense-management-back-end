@@ -41,7 +41,7 @@ public class WishlistItemController {
     }
 
     @GetMapping("/find-products")
-    public ResponseEntity<?> findProducts(@RequestParam String keyword, @RequestParam WishlistItemVendor vendor) {
+    public ResponseEntity<?> findProducts(@RequestParam String keyword, @RequestParam String vendor) {
         try {
             return new ResponseEntity<>(service.findProductsByKeywordAndVendor(keyword, vendor), HttpStatus.OK);
         } catch (ServiceException e) {

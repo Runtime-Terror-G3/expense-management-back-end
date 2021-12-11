@@ -34,6 +34,8 @@ import service.mail.IEmailService;
 import viewmodel.WishlistItemViewModel;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class Service implements IService {
@@ -374,14 +376,22 @@ public class Service implements IService {
         );
     }
 
-    public Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, WishlistItemVendor vendor) throws ServiceException, IOException {
-        if (vendor == WishlistItemVendor.Cel) {
+    public Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException {
+        if (vendor.equalsIgnoreCase("ALL")) {
+            return WishlistItemViewModel.fromWishlistItemList(
+                    Stream.concat(
+                            altexParser.getProductsByKeyword(keyword).stream(),
+                            celParser.getProductsByKeyword(keyword).stream()
+                    ).collect(Collectors.toList())
+            );
+        }
+        if (vendor.equalsIgnoreCase("CEL")) {
             return WishlistItemViewModel.fromWishlistItemList(celParser.getProductsByKeyword(keyword));
         }
-        if (vendor == WishlistItemVendor.Altex) {
+        if (vendor.equalsIgnoreCase("ALTEX")) {
             return WishlistItemViewModel.fromWishlistItemList(altexParser.getProductsByKeyword(keyword));
         }
 
-        throw new ServiceException("The vendor must be either Cel or Altex!");
+        throw new ServiceException("The vendor must be Cel, Altex or all!");
     }
 }

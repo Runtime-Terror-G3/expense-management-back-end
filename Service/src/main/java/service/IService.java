@@ -123,5 +123,5 @@ public interface IService {
      */
     Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
 
-    Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, WishlistItemVendor vendor) throws ServiceException, IOException;
+    Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;
 }
