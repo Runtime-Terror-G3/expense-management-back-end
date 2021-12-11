@@ -1,5 +1,10 @@
 package utils;
 
+import domain.User;
+import service.IService;
+
+import java.util.Optional;
+
 public class Utils {
     /**
      * Converts a hex string to a byte array
@@ -24,5 +29,22 @@ public class Utils {
             data[i / 2] = (byte) ((first_digit << 4) + second_digit);
         }
         return data;
+    }
+
+    public static Integer validateToken(String bearerToken, IService service) throws Exception {
+
+        if (bearerToken != null && bearerToken.startsWith("Bearer")) { //verify the token format
+            String token = bearerToken.substring(7);
+            Optional<User> user = service.getTokenUser(token);
+            if (user.isPresent()) { //verify if there is an user associated with the token
+                return user.get().getId();
+            }
+            else {
+                throw  new Exception("Unauthorized");
+            }
+        }
+        else{
+            throw new Exception("Forbidden");
+        }
     }
 }
