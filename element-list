@@ -1,0 +1,13 @@
+controller
+domain
+dto
+repository
+repository.hibernate
+server
+service
+service.exception
+service.mail
+service.productParser
+service.productParser.parserutils
+utils
+viewmodel

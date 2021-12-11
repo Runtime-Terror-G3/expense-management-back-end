@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"controller"},{"l":"domain"},{"l":"dto"},{"l":"repository"},{"l":"repository.hibernate"},{"l":"server"},{"l":"service"},{"l":"service.exception"},{"l":"service.mail"},{"l":"service.productParser"},{"l":"service.productParser.parserutils"},{"l":"utils"},{"l":"viewmodel"}]
