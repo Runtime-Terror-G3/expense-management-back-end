@@ -41,12 +41,15 @@ public class ExpenseController {
             return new ResponseEntity<>(service.deleteExpense(expenseId, userId), HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden", "Forbidden access to this expense" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                case "Internal server error" -> new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message) || "Forbidden access to this expense".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            } else if ("Internal server error".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -62,11 +65,13 @@ public class ExpenseController {
             return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -92,11 +97,13 @@ public class ExpenseController {
             return new ResponseEntity<>(service.getTotalExpensesInTime(userId, granularity, startDate, endDate, category), HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -111,11 +118,13 @@ public class ExpenseController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

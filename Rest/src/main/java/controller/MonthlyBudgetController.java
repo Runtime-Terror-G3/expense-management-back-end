@@ -31,18 +31,21 @@ public class MonthlyBudgetController {
         try {
             int userId = validateToken(bearerToken, service);
             ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId, userId);
-            return switch (response.getStatus()) {
-                case 403 -> new ResponseEntity<>(response.getErrorMessage(), HttpStatus.FORBIDDEN);
-                case 500 -> new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-                default -> new ResponseEntity<>(HttpStatus.OK);
-            };
+            if (response.getStatus() == 403) {
+                return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.FORBIDDEN);
+            } else if (response.getStatus() == 500) {
+                return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -76,11 +79,13 @@ public class MonthlyBudgetController {
             return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
         }
         catch (Exception e ){
-            return switch (e.getMessage()) {
-                case "Unauthorized" -> new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-                case "Forbidden" -> new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-                default -> new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            };
+            String message = e.getMessage();
+            if ("Unauthorized".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            } else if ("Forbidden".equals(message)) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
