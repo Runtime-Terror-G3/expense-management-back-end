@@ -60,7 +60,6 @@ public class ExpenseController {
             @RequestParam long startDate,
             @RequestParam long endDate
     ) {
-        System.out.println("get");
         try {
             int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.getExpenses(userId, category, startDate, endDate), HttpStatus.OK);
