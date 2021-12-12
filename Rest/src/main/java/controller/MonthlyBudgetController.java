@@ -44,8 +44,12 @@ public class MonthlyBudgetController {
     }
 
     @PostMapping("add-monthly-budget")
-    public ResponseEntity<?> create(@RequestBody MonthlyBudgetDto monthlyBudgetDto) {
+    public ResponseEntity<?> create(@RequestBody MonthlyBudgetDto monthlyBudgetDto,
+                                    @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            monthlyBudgetDto.setUserId(userId);
+
             return new ResponseEntity<>(service.addMonthlyBudget(monthlyBudgetDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -53,8 +57,12 @@ public class MonthlyBudgetController {
     }
 
     @PutMapping("/update-monthly-budget/{budgetId}")
-    public ResponseEntity<?> updateMonthlyBudget(@PathVariable int budgetId, @RequestBody MonthlyBudgetDto monthlyBudgetDto) {
+    public ResponseEntity<?> updateMonthlyBudget(@PathVariable int budgetId, @RequestBody MonthlyBudgetDto monthlyBudgetDto,
+                                                 @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            monthlyBudgetDto.setUserId(userId);
+
             return new ResponseEntity<>(service.updateMonthlyBudget(budgetId, monthlyBudgetDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

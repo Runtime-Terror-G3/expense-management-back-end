@@ -259,7 +259,8 @@ public class Service implements IService {
 
         if (budgetToUpdate.isPresent()) {
             if (budgetToUpdate.get().getUser().getId() != monthlyBudgetDto.getUserId()) {
-                throw new ServiceException("Not allowed to modify this resource");
+                throw new AuthorizationException("Not allowed to modify this resource",
+                        Constants.AuthorizationExceptionCode.FORBIDDEN);
             }
 
             MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
