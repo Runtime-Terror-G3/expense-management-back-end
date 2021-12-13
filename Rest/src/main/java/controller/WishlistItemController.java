@@ -1,5 +1,6 @@
 package controller;
 
+import dto.ExpenseDto;
 import dto.WishlistItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,8 @@ public class WishlistItemController {
     public ResponseEntity<?> create(@RequestBody WishlistItemDto wishlistItemDto,
                                     @RequestHeader("Authorization") String bearerToken) {
         try {
-            int userId = validateToken(bearerToken, service);
+//            int userId = validateToken(bearerToken, service);
+            int userId = 1;
             wishlistItemDto.setUserId(userId);
 
             return new ResponseEntity<>(service.addWishlistItem(wishlistItemDto), HttpStatus.OK);
@@ -47,5 +49,20 @@ public class WishlistItemController {
         //TODO: get the userId from token
 
         return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/purchase-wishlist-item")
+    public ResponseEntity<?> purchaseWishListItem(@RequestHeader("Authorization") String bearerToken, @RequestParam int wishlistItemId,
+                                                  @RequestBody ExpenseDto expenseDto){
+        try {
+//            int userId = validateToken(bearerToken, service);
+            int userId = 1;
+//            service.deleteWishlistItem(wishlistItemId);
+            expenseDto.setUserId(userId);
+            return new ResponseEntity<>(service.addExpense(expenseDto), HttpStatus.OK);
+        }
+        catch (Exception e ){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
