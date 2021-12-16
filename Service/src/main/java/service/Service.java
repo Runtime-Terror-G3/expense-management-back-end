@@ -227,11 +227,11 @@ public class Service implements IService {
         Expense newExpense = Expense.fromExpenseDto(expenseDto);
         Optional<Expense> oldExpense = expenseRepository.findOne(expenseId);
 
-        if(oldExpense.isEmpty()) {
+        if (oldExpense.isEmpty()) {
             throw new ServiceException("Invalid expenseID");
         }
 
-        if(newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
+        if (newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
             throw new AuthorizationException(Constants.AuthorizationExceptionCode.FORBIDDEN);
         }
 
@@ -376,5 +376,33 @@ public class Service implements IService {
         return WishlistItemViewModel.fromWishlistItemList(
                 wishlistItemRepository.getAffordableWishlistItems(userId)
         );
+    }
+
+    @Override
+    public ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException {
+        Optional<WishlistItem> wishlistItemToBeDeleted = wishlistItemRepository.findOne(wishlistItemId);
+        if (wishlistItemToBeDeleted.isPresent()) {
+            if (wishlistItemToBeDeleted.get().getUser().getId() != expenseDto.getUserId())
+                throw new ServiceException("Forbidden access to this wishlist item");
+            Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
+            if (deletedWishlistItem.isPresent()) {
+                Expense expense = Expense.fromExpenseDto(expenseDto);
+                Optional<Expense> savedExpense = expenseRepository.save(expense);
+                if (savedExpense.isPresent()) {
+                    Optional<WishlistItem> wishlistItemToBeAddedAgain = wishlistItemRepository.save(wishlistItemToBeDeleted.get());
+                    if (wishlistItemToBeAddedAgain.isPresent()) {
+                        throw new ServiceException("An error occurred while saving the expense and the deleted wishlist item couldn't be added back");
+                    } else {
+                        throw new ServiceException("An error occurred while saving the expense but the deleted wishlist item was added back");
+                    }
+                } else {
+                    return ExpenseViewModel.fromExpense(expense);
+                }
+            } else {
+                throw new ServiceException("An error occurred while deleting the wishlist item");
+            }
+        } else {
+            throw new ServiceException("The wishlist item does not exist");
+        }
     }
 }

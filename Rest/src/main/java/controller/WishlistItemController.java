@@ -22,8 +22,7 @@ public class WishlistItemController {
     public ResponseEntity<?> create(@RequestBody WishlistItemDto wishlistItemDto,
                                     @RequestHeader("Authorization") String bearerToken) {
         try {
-//            int userId = validateToken(bearerToken, service);
-            int userId = 1;
+            int userId = validateToken(bearerToken, service);
             wishlistItemDto.setUserId(userId);
 
             return new ResponseEntity<>(service.addWishlistItem(wishlistItemDto), HttpStatus.OK);
@@ -51,15 +50,13 @@ public class WishlistItemController {
         return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
     }
 
-    @GetMapping("/purchase-wishlist-item")
-    public ResponseEntity<?> purchaseWishListItem(@RequestHeader("Authorization") String bearerToken, @RequestParam int wishlistItemId,
+    @PostMapping("/purchase-wishlist-item/{wishlistItemId}")
+    public ResponseEntity<?> purchaseWishlistItem(@RequestHeader("Authorization") String bearerToken, @PathVariable int wishlistItemId,
                                                   @RequestBody ExpenseDto expenseDto){
         try {
-//            int userId = validateToken(bearerToken, service);
-            int userId = 1;
-//            service.deleteWishlistItem(wishlistItemId);
+            int userId = validateToken(bearerToken, service);
             expenseDto.setUserId(userId);
-            return new ResponseEntity<>(service.addExpense(expenseDto), HttpStatus.OK);
+            return new ResponseEntity<>(service.purchaseWishlistItem(wishlistItemId, expenseDto), HttpStatus.OK);
         }
         catch (Exception e ){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

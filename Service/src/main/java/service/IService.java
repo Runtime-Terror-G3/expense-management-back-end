@@ -125,4 +125,6 @@ public interface IService {
      * @return a list of wishlistItemViewModels
      */
     Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
+
+    ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException;
 }
