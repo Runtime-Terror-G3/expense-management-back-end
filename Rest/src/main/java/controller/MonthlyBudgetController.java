@@ -12,6 +12,8 @@ import service.exception.ServiceException;
 
 import java.util.Date;
 
+import static utils.Utils.validateToken;
+
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
@@ -20,25 +22,34 @@ public class MonthlyBudgetController {
     @Autowired
     private IService service;
 
-    @DeleteMapping("/delete-monthly-budget/{budgetId}/{userId}")
+    @DeleteMapping("/delete-monthly-budget/{budgetId}")
     public ResponseEntity<?> deleteMonthlyBudget(
             @PathVariable int budgetId,
-            @PathVariable int userId
+            @RequestHeader("Authorization") String bearerToken
     ){
-        // TODO - get userId using authorization method; return unauthorized if is not valid; remove userId from path
-        ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId,userId);
-        switch (response.getStatus()){
-            case 403:
-                return new ResponseEntity<>(response.getErrorMessage(),HttpStatus.FORBIDDEN);
-            case 500:
+
+        try {
+            int userId = validateToken(bearerToken, service);
+            ServiceEmptyResponse response = service.deleteMonthlyBudget(budgetId, userId);
+            if (response.getStatus() == 403) {
+                return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.FORBIDDEN);
+            } else if (response.getStatus() == 500) {
                 return new ResponseEntity<>(response.getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        catch (Exception e ){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("add-monthly-budget")
-    public ResponseEntity<?> create(@RequestBody MonthlyBudgetDto monthlyBudgetDto) {
+    public ResponseEntity<?> create(@RequestBody MonthlyBudgetDto monthlyBudgetDto,
+                                    @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            monthlyBudgetDto.setUserId(userId);
+
             return new ResponseEntity<>(service.addMonthlyBudget(monthlyBudgetDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -46,8 +57,12 @@ public class MonthlyBudgetController {
     }
 
     @PutMapping("/update-monthly-budget/{budgetId}")
-    public ResponseEntity<?> updateMonthlyBudget(@PathVariable int budgetId, @RequestBody MonthlyBudgetDto monthlyBudgetDto) {
+    public ResponseEntity<?> updateMonthlyBudget(@PathVariable int budgetId, @RequestBody MonthlyBudgetDto monthlyBudgetDto,
+                                                 @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            monthlyBudgetDto.setUserId(userId);
+
             return new ResponseEntity<>(service.updateMonthlyBudget(budgetId, monthlyBudgetDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -56,14 +71,16 @@ public class MonthlyBudgetController {
 
     @GetMapping("/get-monthly-budgets")
     public ResponseEntity<?> getMonthlyBudgets(
-            @RequestParam int userId,
+            @RequestHeader("Authorization") String bearerToken,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
     ){
-        //TODO get userId from token; remove userId param
+
         try {
+            int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.getMonthlyBudgets(userId, startDate, endDate), HttpStatus.OK);
-        } catch (ServiceException e) {
+        }
+        catch (Exception e ){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

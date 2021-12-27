@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.IService;
 import service.exception.ServiceException;
-
 import java.io.IOException;
+
+import static utils.Utils.validateToken;
+
 
 @CrossOrigin
 @RestController
@@ -19,8 +21,12 @@ public class WishlistItemController {
     private IService service;
 
     @PostMapping("/add-wishlistItem")
-    public ResponseEntity<?> create(@RequestBody WishlistItemDto wishlistItemDto) {
+    public ResponseEntity<?> create(@RequestBody WishlistItemDto wishlistItemDto,
+                                    @RequestHeader("Authorization") String bearerToken) {
         try {
+            int userId = validateToken(bearerToken, service);
+            wishlistItemDto.setUserId(userId);
+
             return new ResponseEntity<>(service.addWishlistItem(wishlistItemDto), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -28,9 +34,15 @@ public class WishlistItemController {
     }
 
     @GetMapping("/get-wishlist-items")
-    public ResponseEntity<?> getWishlistItems(@RequestParam int userId) {
-        //TODO: get the userId from token
-        return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
+    public ResponseEntity<?> getWishlistItems(@RequestHeader("Authorization") String bearerToken) {
+
+        try {
+            int userId = validateToken(bearerToken, service);
+            return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
+        }
+        catch (Exception e ){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/get-affordable-wishlist-items")

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import repository.IExpenseRepository;
 import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
+import service.exception.AuthorizationException;
 import service.exception.ServiceException;
 import service.productParser.CelParser;
 import service.productParser.WebScraperServiceAltex;
@@ -233,15 +234,25 @@ public class Service implements IService {
 
     @Override
     public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException {
-        Expense expense = Expense.fromExpenseDto(expenseDto);
-        expense.setId(expenseId);
+        Expense newExpense = Expense.fromExpenseDto(expenseDto);
+        Optional<Expense> oldExpense = expenseRepository.findOne(expenseId);
 
-        Optional<Expense> updatedExpense = expenseRepository.update(expense);
+        if(oldExpense.isEmpty()) {
+            throw new ServiceException("Invalid expenseID");
+        }
+
+        if(newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
+            throw new AuthorizationException(Constants.AuthorizationExceptionCode.FORBIDDEN);
+        }
+
+        newExpense.setId(expenseId);
+
+        Optional<Expense> updatedExpense = expenseRepository.update(newExpense);
         if (updatedExpense.isPresent()) {
             throw new ServiceException("An error occurred while updating the expense.");
         }
 
-        return ExpenseViewModel.fromExpense(expense);
+        return ExpenseViewModel.fromExpense(newExpense);
     }
 
     @Override
@@ -308,7 +319,8 @@ public class Service implements IService {
 
         if (budgetToUpdate.isPresent()) {
             if (budgetToUpdate.get().getUser().getId() != monthlyBudgetDto.getUserId()) {
-                throw new ServiceException("Not allowed to modify this resource");
+                throw new AuthorizationException("Not allowed to modify this resource",
+                        Constants.AuthorizationExceptionCode.FORBIDDEN);
             }
 
             MonthlyBudget monthlyBudget = MonthlyBudget.fromMonthlyBudgetDto(monthlyBudgetDto);
