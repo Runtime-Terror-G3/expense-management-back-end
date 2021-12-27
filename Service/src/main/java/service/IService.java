@@ -1,10 +1,6 @@
 package service;
 
-import domain.Expense;
-import domain.ExpenseCategory;
-import domain.TotalExpensesDto;
-import domain.User;
-import domain.UserRequest;
+import domain.*;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 import dto.WishlistItemDto;
@@ -13,6 +9,7 @@ import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 import viewmodel.WishlistItemViewModel;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -125,4 +122,6 @@ public interface IService {
      * @return a list of wishlistItemViewModels
      */
     Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
+
+    Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;
 }

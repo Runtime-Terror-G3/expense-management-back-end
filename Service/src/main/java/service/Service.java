@@ -14,9 +14,12 @@ import repository.IMonthlyBudgetRepository;
 import repository.IUserRepository;
 import service.exception.AuthorizationException;
 import service.exception.ServiceException;
+import service.productParser.CelParser;
+import service.productParser.WebScraperServiceAltex;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,15 +29,14 @@ import java.util.*;
 
 import repository.IUserRequestRepository;
 import repository.IWishlistItemRepository;
-import service.exception.ServiceException;
 import service.mail.ActivateAccountEmailModel;
 import service.mail.EmailType;
 import service.mail.IEmailService;
-import viewmodel.ExpenseViewModel;
-import viewmodel.MonthlyBudgetViewModel;
 import viewmodel.WishlistItemViewModel;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class Service implements IService {
@@ -50,6 +52,10 @@ public class Service implements IService {
     private final IEmailService emailService;
     @Autowired
     private final IWishlistItemRepository wishlistItemRepository;
+    @Autowired
+    private final CelParser celParser;
+    @Autowired
+    private final WebScraperServiceAltex altexParser;
 
     private static final long TOKEN_TIME = 8L * 60 * 60 * 1000; // 8 hours
     private static final Algorithm signingAlgorithm = Algorithm.HMAC256("super secret token secret");
@@ -60,7 +66,9 @@ public class Service implements IService {
             IMonthlyBudgetRepository monthlyBudgetRepository,
             IUserRequestRepository userRequestRepository,
             IWishlistItemRepository wishlistItemRepository,
-            IEmailService emailService
+            IEmailService emailService,
+            CelParser celParser,
+            WebScraperServiceAltex altexParser
     ) {
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
@@ -68,6 +76,8 @@ public class Service implements IService {
         this.userRequestRepository = userRequestRepository;
         this.emailService = emailService;
         this.wishlistItemRepository=wishlistItemRepository;
+        this.celParser = celParser;
+        this.altexParser = altexParser;
     }
 
     private static String hashPassword(String password) {
@@ -376,5 +386,24 @@ public class Service implements IService {
         return WishlistItemViewModel.fromWishlistItemList(
                 wishlistItemRepository.getAffordableWishlistItems(userId)
         );
+    }
+
+    public Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException {
+        if (vendor.equalsIgnoreCase("ALL")) {
+            return WishlistItemViewModel.fromWishlistItemList(
+                    Stream.concat(
+                            altexParser.getProductsByKeyword(keyword).stream(),
+                            celParser.getProductsByKeyword(keyword).stream()
+                    ).collect(Collectors.toList())
+            );
+        }
+        if (vendor.equalsIgnoreCase("CEL")) {
+            return WishlistItemViewModel.fromWishlistItemList(celParser.getProductsByKeyword(keyword));
+        }
+        if (vendor.equalsIgnoreCase("ALTEX")) {
+            return WishlistItemViewModel.fromWishlistItemList(altexParser.getProductsByKeyword(keyword));
+        }
+
+        throw new ServiceException("The vendor must be Cel, Altex or all!");
     }
 }
