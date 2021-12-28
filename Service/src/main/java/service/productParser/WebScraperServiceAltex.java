@@ -65,6 +65,7 @@ public class WebScraperServiceAltex implements ProductParser{
         List<WishlistItem> items = new ArrayList<>();
         keyword = URLSafety.sanitizeString(keyword);
         String baseUrlAltex = "https://altex.ro/";
+        String baseImgUrl = "https://lcdn.altex.ro";
         String link = "https://fenrir.altex.ro/catalog/search/"+keyword+"?size="+pageSize+"&page="+pageNumber;
 
         Document doc = Jsoup.connect(link).ignoreContentType(true).get();
@@ -96,7 +97,7 @@ public class WebScraperServiceAltex implements ProductParser{
             item.setPrice(price);
             item.setVendor(WishlistItemVendor.Altex);
             item.setLink(baseUrlAltex+urlKey+"/cpd/"+sku);
-            item.setImage(imageUrl);
+            item.setImage(baseImgUrl+imageUrl);
             item.setTitle(title);
 
             items.add(item);
