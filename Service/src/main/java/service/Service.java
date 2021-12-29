@@ -391,29 +391,26 @@ public class Service implements IService {
     @Override
     public ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException {
         Optional<WishlistItem> wishlistItemToBeDeleted = wishlistItemRepository.findOne(wishlistItemId);
-        if (wishlistItemToBeDeleted.isPresent()) {
-            if (wishlistItemToBeDeleted.get().getUser().getId() != expenseDto.getUserId())
-                throw new AuthorizationException("Forbidden access to this wishlist item", Constants.AuthorizationExceptionCode.FORBIDDEN);
-            Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
-            if (deletedWishlistItem.isPresent()) {
-                Expense expense = Expense.fromExpenseDto(expenseDto);
-                Optional<Expense> savedExpense = expenseRepository.save(expense);
-                if (savedExpense.isPresent()) {
-                    Optional<WishlistItem> wishlistItemToBeAddedAgain = wishlistItemRepository.save(wishlistItemToBeDeleted.get());
-                    if (wishlistItemToBeAddedAgain.isPresent()) {
-                        throw new ServiceException("An error occurred while saving the expense and the deleted wishlist item couldn't be added back");
-                    } else {
-                        throw new ServiceException("An error occurred while saving the expense but the deleted wishlist item was added back");
-                    }
-                } else {
-                    return ExpenseViewModel.fromExpense(expense);
-                }
-            } else {
-                throw new ServiceException("An error occurred while deleting the wishlist item");
-            }
-        } else {
+
+        if (wishlistItemToBeDeleted.isEmpty()) {
             throw new ServiceException("The wishlist item does not exist");
         }
+        if (wishlistItemToBeDeleted.get().getUser().getId() != expenseDto.getUserId()) {
+            throw new AuthorizationException("Forbidden access to this wishlist item", Constants.AuthorizationExceptionCode.FORBIDDEN);
+        }
+
+        Expense expense = Expense.fromExpenseDto(expenseDto);
+        Optional<Expense> savedExpense = expenseRepository.save(expense);
+        if (savedExpense.isPresent()){
+            throw new ServiceException("An error occurred while saving the expense");
+        }
+
+        Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
+        if (deletedWishlistItem.isEmpty()){
+            throw new ServiceException("An error occurred while deleting the wishlist item");
+        }
+
+        return ExpenseViewModel.fromExpense(expense);
     }
 
     public Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException {

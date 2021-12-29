@@ -123,6 +123,13 @@ public interface IService {
      */
     Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
 
+    /**
+     * deletes a wishlist item and adds an expense instead
+     * @param wishlistItemId - id of the wishlist item to be deleted
+     * @param expenseDto - expense to be added
+     * @return - the added expense
+     * @throws ServiceException
+     */
     ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException;
 
     Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;

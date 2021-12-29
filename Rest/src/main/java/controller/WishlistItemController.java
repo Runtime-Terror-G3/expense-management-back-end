@@ -1,7 +1,6 @@
 package controller;
 
 import dto.ExpenseDto;
-import domain.WishlistItemVendor;
 import dto.WishlistItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
