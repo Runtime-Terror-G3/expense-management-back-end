@@ -7,12 +7,14 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Component;
 import service.productParser.parserutils.URLSafety;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class WebScraperServiceAltex implements ProductParser{
 
     private static final int PAGE_SIZE  = 24;
@@ -63,6 +65,7 @@ public class WebScraperServiceAltex implements ProductParser{
         List<WishlistItem> items = new ArrayList<>();
         keyword = URLSafety.sanitizeString(keyword);
         String baseUrlAltex = "https://altex.ro/";
+        String baseImgUrl = "https://lcdn.altex.ro";
         String link = "https://fenrir.altex.ro/catalog/search/"+keyword+"?size="+pageSize+"&page="+pageNumber;
 
         Document doc = Jsoup.connect(link).ignoreContentType(true).get();
@@ -94,7 +97,7 @@ public class WebScraperServiceAltex implements ProductParser{
             item.setPrice(price);
             item.setVendor(WishlistItemVendor.Altex);
             item.setLink(baseUrlAltex+urlKey+"/cpd/"+sku);
-            item.setImage(imageUrl);
+            item.setImage(baseImgUrl+imageUrl);
             item.setTitle(title);
 
             items.add(item);

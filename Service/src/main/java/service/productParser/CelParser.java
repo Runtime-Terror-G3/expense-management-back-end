@@ -4,11 +4,13 @@ import domain.WishlistItem;
 import domain.WishlistItemVendor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class CelParser implements ProductParser {
     private static final String CEL_URL_SEARCH = "https://www.cel.ro/cauta/:keyword";
     private static final int NUMBER_OF_PRODUCTS = 24;
