@@ -58,7 +58,7 @@ public class WishlistItemController {
             expenseDto.setUserId(userId);
             return new ResponseEntity<>(service.purchaseWishlistItem(wishlistItemId, expenseDto), HttpStatus.OK);
         }
-        catch (Exception e ){
+        catch (ServiceException e ){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

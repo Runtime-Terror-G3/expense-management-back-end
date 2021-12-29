@@ -383,7 +383,7 @@ public class Service implements IService {
         Optional<WishlistItem> wishlistItemToBeDeleted = wishlistItemRepository.findOne(wishlistItemId);
         if (wishlistItemToBeDeleted.isPresent()) {
             if (wishlistItemToBeDeleted.get().getUser().getId() != expenseDto.getUserId())
-                throw new ServiceException("Forbidden access to this wishlist item");
+                throw new AuthorizationException("Forbidden access to this wishlist item", Constants.AuthorizationExceptionCode.FORBIDDEN);
             Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
             if (deletedWishlistItem.isPresent()) {
                 Expense expense = Expense.fromExpenseDto(expenseDto);
