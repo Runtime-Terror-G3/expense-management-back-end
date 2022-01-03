@@ -1,6 +1,6 @@
 package controller;
 
-import domain.WishlistItemVendor;
+import dto.ExpenseDto;
 import dto.WishlistItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,6 +50,19 @@ public class WishlistItemController {
         //TODO: get the userId from token
 
         return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
+    }
+
+    @PostMapping("/purchase-wishlist-item/{wishlistItemId}")
+    public ResponseEntity<?> purchaseWishlistItem(@RequestHeader("Authorization") String bearerToken, @PathVariable int wishlistItemId,
+                                                  @RequestBody ExpenseDto expenseDto){
+        try {
+            int userId = validateToken(bearerToken, service);
+            expenseDto.setUserId(userId);
+            return new ResponseEntity<>(service.purchaseWishlistItem(wishlistItemId, expenseDto), HttpStatus.OK);
+        }
+        catch (ServiceException e ){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/find-products")

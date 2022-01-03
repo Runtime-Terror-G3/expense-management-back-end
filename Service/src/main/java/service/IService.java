@@ -4,6 +4,7 @@ import domain.*;
 import dto.ExpenseDto;
 import dto.MonthlyBudgetDto;
 import dto.WishlistItemDto;
+import service.exception.AuthorizationException;
 import service.exception.ServiceException;
 import viewmodel.ExpenseViewModel;
 import viewmodel.MonthlyBudgetViewModel;
@@ -102,8 +103,26 @@ public interface IService {
 
     Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException;
 
-    ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException;
+    /**
+     * updates an expense
+     * @param updateExpenseDto entity containing the data used to update the expense
+     * @param expenseId the id of the expense to be updated
+     * @return the viewModel of the updated expense
+     * @throws ServiceException if the expenseId is invalid or an error occurred while updating the expense
+     * @throws AuthorizationException if the user isn't authorized to access the expense with expenseId
+     */
+    ExpenseViewModel updateExpense(ExpenseDto updateExpenseDto, int expenseId) throws ServiceException, AuthorizationException;
 
+    /**
+     * gets an iterable with totalExpensesDto for the specified period of time, for the specified category and for the specified granularity
+     * @param userId the id of the user
+     * @param granularity granularity of the filtered results
+     * @param startDate the start date from which we want the results
+     * @param endDate the end date from which we want the results
+     * @param category the category for which we want the results
+     * @return an iterable with the asked totalExpensesDto
+     * @throws ServiceException if the start date is after the end date or the granularity isn't year, month or day
+     */
     Iterable<TotalExpensesDto> getTotalExpensesInTime(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category) throws ServiceException;
 
     /**
@@ -122,6 +141,16 @@ public interface IService {
      * @return a list of wishlistItemViewModels
      */
     Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
+
+    /**
+     * deletes a wishlist item and adds an expense instead
+     * @param wishlistItemId - id of the wishlist item to be deleted
+     * @param expenseDto - expense to be added
+     * @return - the added expense
+     * @throws ServiceException when the wishlist item does not exist or an error occurred while saving the expense or deleting the wishlist item
+     * @throws AuthorizationException when the user isn't authorized to access that wishlist item
+     */
+    ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException, AuthorizationException;
 
     Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;
 }

@@ -233,15 +233,15 @@ public class Service implements IService {
     }
 
     @Override
-    public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException {
+    public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException, AuthorizationException {
         Expense newExpense = Expense.fromExpenseDto(expenseDto);
         Optional<Expense> oldExpense = expenseRepository.findOne(expenseId);
 
-        if(oldExpense.isEmpty()) {
+        if (oldExpense.isEmpty()) {
             throw new ServiceException("Invalid expenseID");
         }
 
-        if(newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
+        if (newExpense.getUser().getId() != oldExpense.get().getUser().getId()) {
             throw new AuthorizationException(Constants.AuthorizationExceptionCode.FORBIDDEN);
         }
 
@@ -386,6 +386,31 @@ public class Service implements IService {
         return WishlistItemViewModel.fromWishlistItemList(
                 wishlistItemRepository.getAffordableWishlistItems(userId)
         );
+    }
+
+    @Override
+    public ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException, AuthorizationException {
+        Optional<WishlistItem> wishlistItemToBeDeleted = wishlistItemRepository.findOne(wishlistItemId);
+
+        if (wishlistItemToBeDeleted.isEmpty()) {
+            throw new ServiceException("The wishlist item does not exist");
+        }
+        if (wishlistItemToBeDeleted.get().getUser().getId() != expenseDto.getUserId()) {
+            throw new AuthorizationException("Forbidden access to this wishlist item", Constants.AuthorizationExceptionCode.FORBIDDEN);
+        }
+
+        Expense expense = Expense.fromExpenseDto(expenseDto);
+        Optional<Expense> savedExpense = expenseRepository.save(expense);
+        if (savedExpense.isPresent()){
+            throw new ServiceException("An error occurred while saving the expense");
+        }
+
+        Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
+        if (deletedWishlistItem.isEmpty()){
+            throw new ServiceException("An error occurred while deleting the wishlist item");
+        }
+
+        return ExpenseViewModel.fromExpense(expense);
     }
 
     public Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException {
