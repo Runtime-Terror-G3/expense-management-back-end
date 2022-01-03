@@ -53,8 +53,11 @@ public class WishlistItemController {
     }
 
     @GetMapping("/find-products")
-    public ResponseEntity<?> findProducts(@RequestParam String keyword, @RequestParam String vendor) {
+    public ResponseEntity<?> findProducts(@RequestHeader("Authorization") String bearerToken,
+                                          @RequestParam String keyword,
+                                          @RequestParam String vendor) {
         try {
+            validateToken(bearerToken, service);
             return new ResponseEntity<>(service.findProductsByKeywordAndVendor(keyword, vendor), HttpStatus.OK);
         } catch (ServiceException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
