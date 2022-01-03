@@ -31,5 +31,14 @@ public interface IExpenseRepository extends IRepository<Integer, Expense> {
      */
     Map<ExpenseCategory, Double> getTotalAmountByCategory(User user, LocalDateTime start, LocalDateTime end);
 
+    /**
+     * gets the totalExpensesDto's for those expenses which remain after the filter is applied
+     * @param userId id of the use
+     * @param granularity granularity for the result
+     * @param startDate the date after which we want expenses
+     * @param endDate the date before which we want the expenses
+     * @param category the category from which we want the expenses
+     * @return an iterable with the expenses filtered by the specified attributes
+     */
     Iterable<TotalExpensesDto> findTotalExpensesInTimeByGranularity(int userId, String granularity, LocalDate startDate, LocalDate endDate, String category);
 }

@@ -233,7 +233,7 @@ public class Service implements IService {
     }
 
     @Override
-    public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException {
+    public ExpenseViewModel updateExpense(ExpenseDto expenseDto, int expenseId) throws ServiceException, AuthorizationException {
         Expense newExpense = Expense.fromExpenseDto(expenseDto);
         Optional<Expense> oldExpense = expenseRepository.findOne(expenseId);
 
@@ -389,7 +389,7 @@ public class Service implements IService {
     }
 
     @Override
-    public ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException {
+    public ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException, AuthorizationException {
         Optional<WishlistItem> wishlistItemToBeDeleted = wishlistItemRepository.findOne(wishlistItemId);
 
         if (wishlistItemToBeDeleted.isEmpty()) {
