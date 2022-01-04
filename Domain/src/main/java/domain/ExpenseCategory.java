@@ -8,5 +8,6 @@ public enum ExpenseCategory {
     SelfCare,
     Entertainment,
     Clothing,
+    Wishlist,
     Other
 }
