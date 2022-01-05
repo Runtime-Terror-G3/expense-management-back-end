@@ -35,7 +35,6 @@ public class WishlistItemController {
 
     @GetMapping("/get-wishlist-items")
     public ResponseEntity<?> getWishlistItems(@RequestHeader("Authorization") String bearerToken) {
-
         try {
             int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
@@ -58,6 +57,16 @@ public class WishlistItemController {
         }
     }
 
+    @DeleteMapping("/delete-wishlist-item/{wishlistItemId}")
+    public ResponseEntity<?> deleteWishlistItem(@RequestHeader("Authorization")String bearerToken,@PathVariable int wishlistItemId){
+        try{
+            int userId=validateToken(bearerToken,service);
+            return new ResponseEntity<>(service.deleteWishlistItem(wishlistItemId, userId), HttpStatus.OK);
+
+        }catch(ServiceException ex){
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
     @GetMapping("/find-products")
     public ResponseEntity<?> findProducts(@RequestHeader("Authorization") String bearerToken,
                                           @RequestParam String keyword,

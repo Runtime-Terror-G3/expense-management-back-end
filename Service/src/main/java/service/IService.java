@@ -152,4 +152,13 @@ public interface IService {
     ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException, AuthorizationException;
 
     Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;
+    /**
+     * delete a wishlistItem
+     * @param wishlistItemId-id of the item
+     * @param userId-id of the user who make the request
+     * @return-the deleted item
+     * @throws ServiceException when the wishlist item does not exist or an error occurred while deleting the wishlist item
+     * @throws AuthorizationException when the user isn't authorized to access that wishlist item
+     */
+    WishlistItemViewModel deleteWishlistItem(int wishlistItemId, int userId)throws ServiceException,AuthorizationException;
 }

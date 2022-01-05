@@ -446,4 +446,23 @@ public class Service implements IService {
 
         throw new ServiceException("The vendor must be Cel, Altex or all!");
     }
+
+    @Override
+    public WishlistItemViewModel deleteWishlistItem(int wishlistItemId, int userId) throws ServiceException, AuthorizationException {
+        Optional<WishlistItem> itemForDelete = wishlistItemRepository.findOne(wishlistItemId);
+
+        if (itemForDelete.isEmpty()) {
+            throw new ServiceException("The wishlist item does not exist");
+        }
+        if (itemForDelete.get().getUser().getId() != userId) {
+            throw new AuthorizationException("Forbidden access to this wishlist item", Constants.AuthorizationExceptionCode.FORBIDDEN);
+        }
+
+        Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
+        if (deletedWishlistItem.isEmpty()){
+            throw new ServiceException("An error occurred while deleting the wishlist item");
+        }
+
+        return WishlistItemViewModel.fromWishlistItem(deletedWishlistItem.get());
+    }
 }
