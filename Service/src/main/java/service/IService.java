@@ -133,14 +133,13 @@ public interface IService {
      */
     WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException;
 
-    Iterable<WishlistItemViewModel> getWishlistItems(int userId);
-
     /**
-     * Method for getting the affordable items in a user's wishlist based on his total savings
+     * gets all of the items from a user's wishlist, along with a flag that shows whether each item is affordable based on the user's savings
      * @param userId - the id of the user
      * @return a list of wishlistItemViewModels
+     * @throws IOException if the parser couldn't compute an item's price
      */
-    Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId);
+    Iterable<WishlistItemViewModel> getWishlistItems(int userId) throws IOException;
 
     /**
      * deletes a wishlist item and adds an expense instead

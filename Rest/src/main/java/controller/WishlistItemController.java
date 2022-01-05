@@ -35,21 +35,13 @@ public class WishlistItemController {
 
     @GetMapping("/get-wishlist-items")
     public ResponseEntity<?> getWishlistItems(@RequestHeader("Authorization") String bearerToken) {
-
-            try {
-                int userId = validateToken(bearerToken, service);
-                return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
-            }
-            catch (Exception e ){
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            }
+        try {
+            int userId = validateToken(bearerToken, service);
+            return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
         }
-
-    @GetMapping("/get-affordable-wishlist-items")
-    public ResponseEntity<?> getAffordableWishlistItems(@RequestParam int userId) {
-        //TODO: get the userId from token
-
-        return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
+        catch (IOException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/purchase-wishlist-item/{wishlistItemId}")

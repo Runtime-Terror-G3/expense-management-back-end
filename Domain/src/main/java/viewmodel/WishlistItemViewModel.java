@@ -15,6 +15,7 @@ public class WishlistItemViewModel implements Serializable {
     private String link;
     private String image;
     private WishlistItemVendor vendor;
+    private boolean isAffordable;
 
     public WishlistItemViewModel(){ }
     public WishlistItemViewModel(int id, String title, double price, String link, String image, WishlistItemVendor vendor) {
@@ -72,6 +73,14 @@ public class WishlistItemViewModel implements Serializable {
 
     public void setVendor(WishlistItemVendor vendor) {
         this.vendor = vendor;
+    }
+
+    public boolean isAffordable() {
+        return isAffordable;
+    }
+
+    public void setAffordable(boolean affordable) {
+        isAffordable = affordable;
     }
 
     @Override

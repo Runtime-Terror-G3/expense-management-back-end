@@ -37,6 +37,7 @@ import viewmodel.WishlistItemViewModel;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Component
 public class Service implements IService {
@@ -75,7 +76,7 @@ public class Service implements IService {
         this.monthlyBudgetRepository = monthlyBudgetRepository;
         this.userRequestRepository = userRequestRepository;
         this.emailService = emailService;
-        this.wishlistItemRepository=wishlistItemRepository;
+        this.wishlistItemRepository = wishlistItemRepository;
         this.celParser = celParser;
         this.altexParser = altexParser;
     }
@@ -265,11 +266,11 @@ public class Service implements IService {
         // if the email is already used, another account with the same email cannot be created
         Optional<User> existingUser = userRepository.findByEmail(email);
 
-        if(existingUser.isPresent())
+        if (existingUser.isPresent())
             return Optional.of(new UserRequest());
 
         String passwordHash = hashPassword(password);
-        String activationToken = generateJWT(0, email, firstName, 0,0);
+        String activationToken = generateJWT(0, email, firstName, 0, 0);
 
         UserRequest newUserRequest = new UserRequest(email, firstName, lastName, dateOfBirth, passwordHash, activationToken);
         Optional<UserRequest> savedUserRequest = userRequestRepository.saveOrUpdate(newUserRequest);
@@ -373,19 +374,33 @@ public class Service implements IService {
     }
 
     @Override
-    public Iterable<WishlistItemViewModel> getWishlistItems(int userId) {
-        //TODO: set price dynamically by vendor
+    public Iterable<WishlistItemViewModel> getWishlistItems(int userId) throws IOException {
+        List<WishlistItemViewModel> wishlistItems = new ArrayList<>();
 
-        return WishlistItemViewModel.fromWishlistItemList(
-                wishlistItemRepository.findByUser(userId)
-        );
-    }
+        for (WishlistItem wishlistItem : wishlistItemRepository.findByUser(userId)) {
+            double oldPrice = wishlistItem.getPrice();
 
-    @Override
-    public Iterable<WishlistItemViewModel> getAffordableWishlistItems(int userId) {
-        return WishlistItemViewModel.fromWishlistItemList(
-                wishlistItemRepository.getAffordableWishlistItems(userId)
-        );
+            if (wishlistItem.getVendor() == WishlistItemVendor.Altex)
+                wishlistItem.setPrice(altexParser.computePrice(wishlistItem));
+            else if (wishlistItem.getVendor() == WishlistItemVendor.Cel)
+                wishlistItem.setPrice(celParser.computePrice(wishlistItem));
+
+            if (oldPrice != wishlistItem.getPrice()) {
+                wishlistItem.setUser(new User(userId));
+                wishlistItemRepository.update(wishlistItem);
+            }
+
+            wishlistItems.add(wishlistItem.toWishlistItemViewModel());
+        }
+
+        List<WishlistItemViewModel> affordableWishlistItems = StreamSupport.stream(WishlistItemViewModel.fromWishlistItemList(wishlistItemRepository.getAffordableWishlistItems(userId)).spliterator(), false)
+                .collect(Collectors.toList());
+
+        for (WishlistItemViewModel wishlistItem : wishlistItems) {
+            wishlistItem.setAffordable(affordableWishlistItems.contains(wishlistItem));
+        }
+
+        return wishlistItems;
     }
 
     @Override
@@ -401,12 +416,12 @@ public class Service implements IService {
 
         Expense expense = Expense.fromExpenseDto(expenseDto);
         Optional<Expense> savedExpense = expenseRepository.save(expense);
-        if (savedExpense.isPresent()){
+        if (savedExpense.isPresent()) {
             throw new ServiceException("An error occurred while saving the expense");
         }
 
         Optional<WishlistItem> deletedWishlistItem = wishlistItemRepository.delete(wishlistItemId);
-        if (deletedWishlistItem.isEmpty()){
+        if (deletedWishlistItem.isEmpty()) {
             throw new ServiceException("An error occurred while deleting the wishlist item");
         }
 
