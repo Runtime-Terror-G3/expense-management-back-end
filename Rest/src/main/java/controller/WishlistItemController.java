@@ -40,16 +40,9 @@ public class WishlistItemController {
             int userId = validateToken(bearerToken, service);
             return new ResponseEntity<>(service.getWishlistItems(userId), HttpStatus.OK);
         }
-        catch (Exception e ){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        catch (IOException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @GetMapping("/get-affordable-wishlist-items")
-    public ResponseEntity<?> getAffordableWishlistItems(@RequestParam int userId) {
-        //TODO: get the userId from token
-
-        return new ResponseEntity<>(service.getAffordableWishlistItems(userId), HttpStatus.OK);
     }
 
     @PostMapping("/purchase-wishlist-item/{wishlistItemId}")
