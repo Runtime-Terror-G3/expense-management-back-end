@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 controller
 domain
 dto
@@ -12,18 +11,3 @@ service.productParser
 service.productParser.parserutils
 utils
 viewmodel
-=======
-controller
-domain
-dto
-repository
-repository.hibernate
-server
-service
-service.exception
-service.mail
-service.productParser
-service.productParser.parserutils
-utils
-viewmodel
->>>>>>> midsprint 3 docs
