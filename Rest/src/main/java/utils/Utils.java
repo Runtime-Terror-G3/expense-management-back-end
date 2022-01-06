@@ -10,6 +10,8 @@ import java.util.Optional;
 public class Utils {
     /**
      * Converts a hex string to a byte array
+     * @param s the hex string to convert
+     * @return the byte array obtained from the hex string
      * @throws IllegalArgumentException if hex string is invalid
      */
     public static byte[] hexStringToByteArray(String s) throws IllegalArgumentException {
@@ -36,8 +38,8 @@ public class Utils {
     /**
      * Checks if a token is valid, the TokenException this throws should be handled by the GlobalExceptionHandler.
      *
-     * @param bearerToken
-     * @param service
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @param service a reference to the Service
      * @return the id of the user, if the token is valid.
      * @throws AuthorizationException if the token is invalid
      */

@@ -38,14 +38,31 @@ public interface IService {
      */
     boolean activateAccount(String activationToken);
 
+    /**
+     * Login into the app
+     * @param email the email of the user
+     * @param password the password of the user
+     * @return the logged in User if the login was successful or an empty Optional otherwise
+     */
     Optional<User> login(String email, String password);
 
+    /**
+     * Generate the JWT for the given user
+     * @param user the User to generate the token for
+     * @return the generated JWT - String
+     */
     String generateUserToken(User user);
 
+    /**
+     * Extract the user from the token
+     * @param token the token to extract the User from
+     * @return an Optional, which contains the extracted User if the operation was successful,
+     *          otherwise it is empty
+     */
     Optional<User> getTokenUser(String token);
 
     /**
-        Deletes a monthly budget of a given user
+     * Deletes a monthly budget of a given user
      * @param budgetId id of the budget to be deleted
      * @param userId id of the user who requested the deletion
      * @return a ServiceEmptyResponse with status=200 in case of success
@@ -55,23 +72,36 @@ public interface IService {
      */
     ServiceEmptyResponse deleteMonthlyBudget(int budgetId, int userId);
 
+    /**
+     * Add an expense
+     * @param expenseDto an ExpenseDto corresponding to the expense to be added
+     * @return an ExpenseViewModel corresponding to the expense, if it was added successfully
+     * @throws ServiceException if the expense could not be added
+     */
     ExpenseViewModel addExpense(ExpenseDto expenseDto) throws ServiceException;
 
+    /**
+     * Add a monthly budget
+     * @param monthlyBudgetDto a MonthlyBudgetDto corresponding to the monthly budget to be added
+     * @return a MonthlyBudgetViewModel corresponding to the monthly budget, if it was added successfully
+     * @throws ServiceException if the monthly budget could not be added
+     */
     MonthlyBudgetViewModel addMonthlyBudget(MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 
     /**
      * delete an expense
      * @param expenseId-id of the expense
      * @param userId-id of the user who make the request
-     * @return-a ServiceEmptyResponse with status:
+     * @return - a ServiceEmptyResponse with status:
      * 200-succes
      * 403-the user who make the request isn't the user with this expense
      * 500-internal server error
      * 404-expense not found
+     * @throws ServiceException if something goes wrong on the server
      */
     ExpenseViewModel deleteExpense(int expenseId, int userId) throws ServiceException;
 
-    /*
+    /**
      * Get expenses filtered by a date interval
      * @param userId id of the user the expenses belong to
      * @param category category of the expenses
@@ -101,6 +131,14 @@ public interface IService {
      */
     MonthlyBudgetViewModel updateMonthlyBudget(int budgetId, MonthlyBudgetDto monthlyBudgetDto) throws ServiceException;
 
+    /**
+     * Get the monthly budgets for a user during a period of time
+     * @param userId the id of the user
+     * @param startDate the beginning of the time period
+     * @param endDate the end of the time period
+     * @return a collection of view models for the monthly budgets available in the given time interval
+     * @throws ServiceException if the endDate is greater than the startDate
+     */
     Iterable<MonthlyBudgetViewModel> getMonthlyBudgets(int userId, Date startDate, Date endDate) throws ServiceException;
 
     /**
@@ -128,8 +166,8 @@ public interface IService {
     /**
      * save a wishlistItem-custom or normal(from search results)
      * @param wishlistItemDto-the object to be saved
-     * @return-null if succes,the entity if save in DB fails
-     * @throws ServiceException
+     * @return null if succes,the entity if save in DB fails
+     * @throws ServiceException if the wishlist item could not be saved
      */
     WishlistItemViewModel addWishlistItem(WishlistItemDto wishlistItemDto) throws ServiceException;
 
@@ -151,12 +189,21 @@ public interface IService {
      */
     ExpenseViewModel purchaseWishlistItem(int wishlistItemId, ExpenseDto expenseDto) throws ServiceException, AuthorizationException;
 
+    /**
+     * Retrieve a collection of products from a specific vendor, filtered by a keyword
+     * @param keyword the keyword by which the product search is done
+     * @param vendor the desired vendor
+     * @return a collection of WishlistItemViewModel, each representing a product
+     * @throws ServiceException if something is wrong with the parameters
+     * @throws IOException if something went wrong during the retrieval of products from the specified vendor
+     */
     Iterable<WishlistItemViewModel> findProductsByKeywordAndVendor(String keyword, String vendor) throws ServiceException, IOException;
+
     /**
      * delete a wishlistItem
      * @param wishlistItemId-id of the item
      * @param userId-id of the user who make the request
-     * @return-the deleted item
+     * @return the deleted item
      * @throws ServiceException when the wishlist item does not exist or an error occurred while deleting the wishlist item
      * @throws AuthorizationException when the user isn't authorized to access that wishlist item
      */

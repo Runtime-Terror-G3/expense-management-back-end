@@ -74,6 +74,8 @@ public class Expense implements Entity<Integer> {
 
     /**
      * transforms an ExpenseDto object to an Expense object
+     * @param expenseDto the expense dto to tranform
+     * @return the expense obtained from the dto
      */
     public static Expense fromExpenseDto(ExpenseDto expenseDto) {
         return new Expense(

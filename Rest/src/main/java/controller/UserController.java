@@ -12,6 +12,11 @@ import utils.Utils;
 
 import java.util.Optional;
 
+/**
+ * The REST Controller responsible for exposing the endpoints related to the login functionality:
+ * - sign-in
+ * - auth-check
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
@@ -19,6 +24,14 @@ public class UserController {
     @Autowired
     private IService service;
 
+    /**
+     * Sign in into the app
+     * Method: POST
+     * @param body the request body - a String containing
+     *             email: String
+     *             password: String (hex string of a sha256 hash)
+     * @return the logged in User if the login was successful or an error message otherwise
+     */
     @PostMapping("/sign-in")
     public ResponseEntity<?> login(@RequestBody String body) {
         try {
@@ -49,6 +62,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Check the authentication token
+     * @param token the token to be checked
+     * @return the user's first name, if the token is valid, or an error message otherwise
+     */
     @PostMapping("/auth-check")
     public ResponseEntity<?> authenticationCheck(@RequestBody String token) {
         Optional<User> user = service.getTokenUser(token);

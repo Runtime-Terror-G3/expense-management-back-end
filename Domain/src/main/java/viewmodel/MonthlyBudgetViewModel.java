@@ -44,6 +44,8 @@ public class MonthlyBudgetViewModel implements Serializable {
 
     /**
      * transforms an MonthlyBudget object to and MonthlyBudgetViewModel object
+     * @param monthlyBudget the monthly budget to transform
+     * @return a MonthlyBudgetViewModel for the given item
      */
     public static MonthlyBudgetViewModel fromMonthlyBudget(MonthlyBudget monthlyBudget) {
         return new MonthlyBudgetViewModel(

@@ -98,6 +98,8 @@ public class WishlistItemViewModel implements Serializable {
 
     /**
      * transforms an WishlistItem object to and WishlistItemViewModel object
+     * @param wishlistItem the wishlist item to transform
+     * @return a WishlistItemViewModel for the given item
      */
     public static WishlistItemViewModel fromWishlistItem(WishlistItem wishlistItem) {
         return new WishlistItemViewModel(

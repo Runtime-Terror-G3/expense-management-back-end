@@ -41,6 +41,8 @@ public class ExpenseViewModel implements Serializable {
 
     /**
      * transforms an Expense object to and ExpenseViewModel object
+     * @param expense the expens to transform
+     * @return the ExpenseViewModel for the given expense
      */
     public static ExpenseViewModel fromExpense(Expense expense) {
         return new ExpenseViewModel(

@@ -16,6 +16,15 @@ import java.util.Map;
 
 import static utils.Utils.validateToken;
 
+/**
+ * The REST Controller responsible for exposing the endpoints related to managing expenses:
+ * - add-expense
+ * - delete-expense
+ * - get-expenses
+ * - update-expense
+ * - total-expenses-in-time
+ * - category-total
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
@@ -23,6 +32,15 @@ public class ExpenseController {
     @Autowired
     private IService service;
 
+    /**
+     * Endpoint for adding an expense
+     * Method: POST
+     * Requires Authorization header
+     * @param expenseDto an ExpenseDto ; represents the request body
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @return a ResponseEntity with the ExpenseViewModel corresponding to the added expense
+     *         or with an error message if the expense could not be added
+     */
     @PostMapping("/add-expense")
     public ResponseEntity<?> create(@RequestBody ExpenseDto expenseDto, @RequestHeader("Authorization") String bearerToken) {
         try {
@@ -36,6 +54,19 @@ public class ExpenseController {
     }
 
 
+    /**
+     * Endpoint for deleting an expense
+     * Method: DELETE
+     * Requires Authorization header
+     * Query parameters:
+     *      category: String (one of the expense categories or All)
+     *      startDate: String (UNIX timestamp)
+     *      endDate: String (UNIX timestamp)
+     * @param expenseId the id of the expense to delete
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @return a ResponseEntity with the ExpenseViewModel corresponding to the added expense
+     *         or with an error message if the expense could not be added
+     */
     @DeleteMapping("/delete-expense/{expenseId}")
     public ResponseEntity<?> delete(@PathVariable int expenseId, @RequestHeader("Authorization") String bearerToken) {
         try {
@@ -53,6 +84,16 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * Endpoint for retrieving a collection of expenses filtered by a category and from a specified time interval
+     * Method: GET
+     * Requires Authorization header
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @param category the category of the desired expenses
+     * @param startDate the start of the time interval
+     * @param endDate the end of the time interval
+     * @return a ResponseEntity with the requested expenses, on success, or with an error message, otherwise
+     */
     @GetMapping("/get-expenses")
     public ResponseEntity<?> getExpenses(
             @RequestHeader("Authorization") String bearerToken,
@@ -69,6 +110,15 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * Endpoint for updating an expense
+     * Method: POST
+     * Requires Authorization header
+     * @param expenseDto the new data for the expense
+     * @param expenseId the id of the expense to be updated
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @return the viewModel of the updated expense
+     */
     @PostMapping("/update-expense/{expenseId}")
     public ResponseEntity<?> update(@RequestBody ExpenseDto expenseDto, @PathVariable int expenseId,
                                     @RequestHeader("Authorization") String bearerToken ) {
@@ -82,6 +132,17 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * Endpoint for retrieving an overview of expenses from a specified time interval
+     * Method: GET
+     * Requires Authorization header
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @param granularity the granularity of the statistic
+     * @param startDate the start of the time interval
+     * @param endDate the end of the time interval
+     * @param category the category for which the report is done
+     * @return a collection of TotalExpensesDto representing the requested report
+     */
     @GetMapping("/total-expenses-in-time")
     public ResponseEntity<?> getTotalExpensesInTime(
             @RequestHeader("Authorization") String bearerToken,
@@ -99,6 +160,15 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * Endpoint for retrieving the total amount of a user's expenses within a time period, grouped by expense category
+     * Method: GET
+     * Requires Authorization header
+     * @param bearerToken a String containing the authorization token ; represents the Authorization header
+     * @param start the start of the time interval
+     * @param end the end of the time interval
+     * @return a {@code Map} where each key represents an {@code ExpenseCategory} and the value, the total amount of expenses of that category
+     */
     @GetMapping(value = "/category-total")
     public ResponseEntity<?> getExpensesTotalByCategory(@RequestHeader("Authorization") String bearerToken,
                                                         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
