@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: '.'
+    image: backend
+    ports:
+      - "8080:8080"
+#  database:
+#    container_name: database
+#    build:
+#      context: 'database/'
+#    image: database
+#    environment:
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_USER=postgres
+#    ports:
+#      - "5432:5432"
