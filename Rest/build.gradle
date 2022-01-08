@@ -34,3 +34,15 @@ dependencies {
     implementation project(':Domain')
     implementation project(':Service')
 }
+
+jar {
+    manifest {
+        attributes "Main-Class": "server.Main"
+    }
+
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
