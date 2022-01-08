@@ -13,7 +13,7 @@ public interface Entity<ID extends Serializable> {
     /**
      * Setter for the id of an {@code Entity}
      * @param id: ID
-     * The id of the current {@code Entity} is set to {@param id}
+     * The id of the current {@code Entity} is set to the given id
      */
     void setId(ID id);
 }

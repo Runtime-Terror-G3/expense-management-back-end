@@ -1,6 +1,5 @@
 package controller;
 
-import domain.User;
 import domain.UserRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,13 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import service.IService;
 import utils.Utils;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+/**
+ * The REST Controller responsible for exposing the endpoints related to creating an account:
+ * - create-account
+ * - activate-account
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/expense-management")
@@ -25,6 +27,17 @@ public class CreateAccountController {
     @Autowired
     private IService service;
 
+    /**
+     * Endpoint for creating an account
+     * Method: POST
+     * @param body a JSON string containing ; represents the request body
+     *      email: String
+     *      password: String (hex String of a sha256 hash)
+     *      firstName: String
+     *      lastName: String
+     *      dateOfBirth: String (yyyy-mm-dd)
+     * @return a ResponseEntity with a message corresponding to the result of the request
+     */
     @PostMapping("/create-account")
     public ResponseEntity<String> createAccount(@RequestBody String body) {
         try {
@@ -50,6 +63,12 @@ public class CreateAccountController {
         }
     }
 
+    /**
+     * Endpoint for activating an account
+     * Method: POST
+     * @param activationToken a String containing the activation token ; represents the request body
+     * @return a ResponseEntity with a message corresponding to the result of the request
+     */
     @PostMapping("/activate-account")
     public ResponseEntity<?> activateAccount(@RequestBody String activationToken){
         if (service.activateAccount(activationToken))

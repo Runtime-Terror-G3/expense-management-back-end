@@ -46,10 +46,10 @@ public class WishlistItem implements Entity<Integer> {
         this.user=user;
     }
 
-
-
     /**
      * transforms an WishlistItemDto object to an WishlistItem object
+     * @param wishlistItemDto the wishlist item dto to transform
+     * @return the wishlist item obtained from the dto
      */
    public static WishlistItem fromWishlistItemDto(WishlistItemDto wishlistItemDto) {
         return new WishlistItem(

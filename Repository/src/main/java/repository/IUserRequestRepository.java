@@ -10,7 +10,7 @@ public interface IUserRequestRepository extends IRepository<Integer, UserRequest
      * Method for finding a UserRequest by its activation token
      * @param activationToken: String, activationToken of the userRequest
      * @return an {@code Optional}
-     *          - null, if there is no entity with activationToken equal to {@param activationToken}
+     *          - null, if there is no entity with activationToken equal to the activationToken
      *          - the entity, otherwise
      * @throws IllegalArgumentException if activationToken is null
      */

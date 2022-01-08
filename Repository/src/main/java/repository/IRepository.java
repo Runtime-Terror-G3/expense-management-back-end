@@ -41,7 +41,7 @@ public interface IRepository<ID extends Serializable, E extends Entity<ID>> {
      * Method for finding an entity
      * @param id: ID, id of the desired entity
      * @return an {@code Optional}
-     *          - null, if there is no entity with id equal to {@param id}
+     *          - null, if there is no entity with id equal to the id
      *          - the entity, otherwise
      * @throws IllegalArgumentException if id is null
      */
@@ -49,7 +49,7 @@ public interface IRepository<ID extends Serializable, E extends Entity<ID>> {
 
     /**
      * Method for retrieving all data
-     * @return i: Iterable<E>, containing all entities
+     * @return i: Iterable containing all entities
      */
     Iterable<E> findAll();
 }
